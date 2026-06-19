@@ -125,7 +125,7 @@ The skill selects **one** and loads only its reference file (progressive disclos
 
 > Guidance the skill repeats: **compose the simplest blocks; don't reach for a framework you can't debug.** A single loop with a deterministic verifier beats an elaborate multi-agent system you can't reason about.
 
-**Where it runs** is a separate choice from *what shape it is*. By default the skill scaffolds against Claude Code primitives (`/loop`, worktrees, sub-agents, a bundled verifier, a state file). If you have a managed runtime such as **Claude Managed Agents** — whose native cron schedules, rubric "grader", memory, and review-before-it-lands gates map almost 1:1 onto the six blocks — the skill can target that instead. See [`references/deploy-claude-managed-agents.md`](references/deploy-claude-managed-agents.md) (kept behind an uncertainty flag, since it's a fast-moving beta).
+**Where it runs** is a separate choice from *what shape it is*. By default the skill scaffolds against Claude Code primitives (`/goal "<verifiable condition>"` for run-until-done, `/loop` for intervals — they combine into a self-terminating loop — plus worktrees, sub-agents, a bundled verifier, a state file). If you have a managed runtime such as **Claude Managed Agents** — whose native cron schedules, rubric "grader", memory, and review-before-it-lands gates map almost 1:1 onto the six blocks — the skill can target that instead. See [`references/deploy-claude-managed-agents.md`](references/deploy-claude-managed-agents.md) (kept behind an uncertainty flag, since it's a fast-moving beta).
 
 ---
 
@@ -212,7 +212,7 @@ The concepts here are not invented; they come from the loop-engineering literatu
 - *The New Stack* — the prompt → context → harness → loop lineage.
 - Geoffrey Huntley — the Ralph technique.
 
-> **Uncertainty flag.** Loop engineering as a named practice is months old as of mid-2026. The core concepts (cold-start, six blocks, skills-vs-memory, maker/checker) are consistent across primary and official sources. **Specific product mechanics — `/loop`, `/schedule`, dynamic intervals — come mostly from secondary reporting and may have shifted; verify them against current Claude Code / Codex docs before relying on them.** The skill preserves this flag in everything it generates.
+> **Uncertainty flag.** Loop engineering as a named practice is months old as of mid-2026. The core concepts (cold-start, six blocks, skills-vs-memory, maker/checker) are consistent across primary and official sources. **Specific product mechanics — `/goal`, `/loop`, `/schedule`, dynamic intervals — come mostly from secondary reporting and may have shifted; verify them against current Claude Code / Codex docs before relying on them.** The skill preserves this flag in everything it generates.
 
 ---
 

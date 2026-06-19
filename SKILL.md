@@ -22,7 +22,7 @@ human typing each turn.
 
 The backbone knowledge for everything here is
 `references/loops-and-loop-engineering.md`. It is the source of truth; do not
-contradict it. If a product mechanic (`/loop`, `/schedule`, dynamic intervals) is
+contradict it. If a product mechanic (`/goal`, `/loop`, `/schedule`, dynamic intervals) is
 uncertain, say so and tell the user to verify against current Claude Code / Codex
 docs — that uncertainty flag is real and must survive into what you generate.
 
@@ -67,7 +67,8 @@ answer before moving on. Don't accept vibes where a predicate is required.
    - Bad: "keep the repo healthy." Good: "every P1 issue has an owner and a plan
      comment." If the answer is a vibe, ask "how would a script know it's true?"
 2. **Trigger.** "What fires it — a schedule (cron / `/schedule` / `/loop`), an
-   event (new PR, inbound email), or run-until-done?"
+   event (new PR, inbound email), or run-until-done (`/goal <verifiable condition>`,
+   often paired with `/loop` for a self-terminating loop on a schedule)?"
 3. **Discovery.** "How does the agent *find* work each cycle?" (query the tracker,
    scan the inbox, diff CI) → a connector.
 4. **Action.** "What is it allowed to *do*, through which tools?" → connectors; note
@@ -180,7 +181,7 @@ Every loop gets **all six**; a missing block is what breaks (see the table).
 
 | # | Block | What you write | Durable or changing |
 |---|---|---|---|
-| 1 | **Scheduling** | A trigger stub (cron line / `/schedule` / `/loop` / run-until-verifier) | durable |
+| 1 | **Scheduling** | A trigger stub (cron line / `/schedule` / `/loop` / `/goal <condition>` / run-until-verifier) | durable |
 | 2 | **Isolation** | A note/command for git worktrees *if* file work runs in parallel | durable |
 | 3 | **Skill** | The loop's **own** `SKILL.md` — conventions only | **durable** |
 | 4 | **Connectors** | Named MCP/tools for discovery + action | durable |
@@ -199,8 +200,12 @@ Concretely, write into the loop folder:
   `scripts/verify_no_p1_unassigned.sh`. The verifier must be *separate* from the
   generator and deterministic where possible.
 - **A trigger stub** — the schedule/event entry. Use Claude Code mechanics
-  concretely (`/schedule "<cron>" …`, `/loop`, worktrees) but **annotate that these
-  mechanics may have changed — verify against current docs.** Never fabricate flags.
+  concretely (`/goal "<verifiable condition>"` for run-until-done, `/loop` for an
+  interval — they combine into a self-directing, self-terminating loop;
+  `/schedule "<cron>" …`; worktrees) but **annotate that these mechanics may have
+  changed — verify against current docs.** Never fabricate flags. `/goal` maps
+  directly to the recursive Goal (Q1), so the stub's condition must be the same
+  checkable predicate.
 - **`HUMAN-GATES.md`** — the irreversible-actions list **and** the budget/stop
   condition, together. This file is mandatory; see below.
 
@@ -254,7 +259,7 @@ Before declaring the loop scaffolded, confirm:
 - [ ] A **separate** verifier exists (script or sub-agent), deterministic if possible.
 - [ ] An **external state file** exists — and no mutable state lives in any SKILL.md.
 - [ ] `HUMAN-GATES.md` lists irreversible actions **and** a budget/stop condition.
-- [ ] Any `/loop` `/schedule` mechanic is flagged "verify against current docs."
+- [ ] Any `/goal` `/loop` `/schedule` mechanic is flagged "verify against current docs."
 
 ## Limitations to bake in (not disclaimers)
 
