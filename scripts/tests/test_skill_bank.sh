@@ -30,6 +30,10 @@ check "lint: malformed index -> fail" 1 $?
 bash "$SCRIPTS/lint_skill_bank_index.sh" --file /nonexistent/path.md >/dev/null 2>&1
 check "lint: missing file -> exit 2" 2 $?
 
+# the real seeded index must always lint clean
+bash "$SCRIPTS/lint_skill_bank_index.sh" --file "$ROOT/references/skill-bank/INDEX.md" >/dev/null 2>&1
+check "lint: seeded INDEX.md is clean" 0 $?
+
 # --- refresh_skill_bank.sh -------------------------------------------------
 bash "$SCRIPTS/refresh_skill_bank.sh" --index "$FIX/index_good.md" --upstream "$FIX/upstream_insync.txt" >/dev/null 2>&1
 check "refresh: index matches upstream -> in sync" 0 $?
