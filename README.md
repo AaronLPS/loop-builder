@@ -20,18 +20,20 @@ Designing that system by hand each time is error-prone — people forget the ver
 
 ## How the skill works
 
-When it triggers, it runs three phases — **elicit → select → scaffold** — and never skips ahead, because a loop with a missing part is the failure mode, not a shortcut.
+When it triggers, it runs in phases — **elicit → survey reuse → select → scaffold** — and never skips ahead, because a loop with a missing part is the failure mode, not a shortcut.
 
 ```mermaid
 flowchart TD
     U["You: 'automate / schedule / monitor / compare ...'"] --> T{loop-builder triggers}
     T --> P1["Phase 1 · ELICIT<br/>the 7 decisions, one at a time"]
-    P1 --> P2["Phase 2 · SELECT<br/>simplest fitting pattern<br/>(load only that reference)"]
+    P1 --> SV["Phase 1.5 · SURVEY REUSE<br/>which installed skills / MCPs / sub-agents<br/>can serve a block?"]
+    SV --> P2["Phase 2 · SELECT<br/>simplest fitting pattern<br/>(load only that reference)"]
     P2 --> P3["Phase 3 · EMIT<br/>the fill-in template, populated"]
     P3 --> SC["SCAFFOLD the 6 building blocks<br/>as real files"]
     SC --> OUT["A loop folder you can run"]
 
     P1 -. enforces .-> R1{{"Goal must be a checkable<br/>predicate, not a vibe"}}
+    SV -. compose, don't rebuild .-> R4{{"Reuse needs a named fallback<br/>(skills are changing state)"}}
     SC -. always emits .-> R2{{"Human-gate list<br/>+ budget / stop condition"}}
     SC -. enforces .-> R3{{"Durable → skill<br/>Changing → state file"}}
 ```
@@ -51,6 +53,10 @@ Every loop, whatever its purpose, comes down to seven decisions. Each maps to a 
 | 7 | **Human gates** | Which actions are irreversible and need approval first? |
 
 (Plus two non-optional captures: the **durable knowledge** to put in the loop's skill, and the **budget/stop** condition.)
+
+### Survey reuse before building (Phase 1.5)
+
+Once the decisions are clear, the skill checks **what's already installed** that can *serve a block* rather than be rebuilt — an existing skill, MCP connector, or sub-agent. This is the "compose blocks; don't reach for a framework you can't debug" principle applied to the build itself: the loop shouldn't re-derive a capability it already has. Findings are mapped to blocks (e.g. a different-model skill as the **verifier**, an MCP as a **connector**, a research agent as a **worker**), and anything wired in gets a **named fallback** — because an external skill is *changing* state you don't control, and a cold start must still work if it's missing or has changed.
 
 ---
 

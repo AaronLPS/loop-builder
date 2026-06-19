@@ -91,6 +91,41 @@ crisp, checkable goal.
 
 ---
 
+## Phase 1.5 — Survey reusable capabilities (don't rebuild what exists)
+
+Before choosing a pattern, check what's **already installed** that can *serve a
+block* instead of being built from scratch. This is the doc's "compose blocks; don't
+reach for a framework you can't debug" principle applied to the build itself — the
+loop shouldn't re-derive a capability that already exists as a skill, connector, or
+sub-agent. Use `find-skills` (or scan the available skills / MCP list) to discover
+options.
+
+Map what you find to the blocks the loop needs — recommend only what **genuinely
+changes the design**, not an exhaustive inventory:
+
+- **Verifier (⑤)** — is there an installed skill or program that can *be* the
+  deterministic check or the evaluator? (e.g. `codex` can act as an independent,
+  *different-model* evaluator — a stronger maker/checker split than a same-model
+  sub-agent.)
+- **Connector (④)** — an MCP/skill that already reads the tracker, the docs, the DB,
+  the inbox? (e.g. `context7` for official library docs; a GitHub MCP for issues.)
+- **Sub-agents (⑤) / workers** — an existing research or worker agent the loop can
+  dispatch rather than hand-rolling one.
+
+Two rules when you recommend reuse, because an external skill is *changing* state you
+don't control:
+
+1. **Name a fallback** for anything you wire in ("use `codex`; if unavailable, a
+   general-purpose sub-agent"), so a cold start still works if the skill is missing
+   or has changed.
+2. **Don't bind to unverified mechanics** — note the skill's name and that its
+   behavior should be confirmed, rather than assuming flags or outputs.
+
+Surface the shortlist to the user and let them choose what to wire in. Record the
+choices in the `REUSE:` line of the template below.
+
+---
+
 ## Phase 2 — Select the simplest fitting pattern
 
 Recommend **one** pattern, then load **only** its reference file (progressive
@@ -125,6 +160,7 @@ TRIGGER:                schedule | event | run-until-done → ____
 DISCOVERY (find work):  ____   (connector: ____)
 ACTION (do work):       ____   (tools: ____ ; isolation: worktree? y/n)
 VERIFY (separate check): ____  (deterministic? y/n)
+REUSE (existing skills): ____  (skill/MCP → block it serves ; fallback: ____)
 STATE (persist outside): ____  (file | board | issues)
 HUMAN GATES:            ____   (irreversible actions list)
 KNOWLEDGE → skill:      ____   (conventions the loop should not re-derive)
@@ -189,6 +225,8 @@ DISCOVERY (find work):  list open P1 issues   (connector: GitHub MCP / gh)
 ACTION (do work):       assign an owner, post an initial plan comment (tools: gh)
 VERIFY (separate check): re-query, assert no P1 lacks assignee  (deterministic? y →
                          scripts/verify_no_p1_unassigned.sh)
+REUSE (existing skills): GitHub MCP → connector (④); verifier is a bundled script,
+                         no external skill needed; fallback: gh CLI
 STATE (persist outside): loops/triage/STATE.md — issues triaged this week
 HUMAN GATES:            none auto-closes; escalate (don't close) anything ambiguous
 KNOWLEDGE → skill:      label taxonomy, what a "plan comment" must contain
@@ -204,6 +242,7 @@ Comments and labels are reversible, so no hard human gate is required — but th
 Before declaring the loop scaffolded, confirm:
 
 - [ ] All seven decisions answered; goal is a checkable predicate.
+- [ ] Reusable capabilities surveyed; anything wired in has a named fallback.
 - [ ] One pattern chosen; only its reference was loaded.
 - [ ] Populated template shown to the user.
 - [ ] Six blocks scaffolded as files in the loop folder.
