@@ -1,8 +1,30 @@
+<div align="center">
+
 # loop-builder
 
-A [Claude Code](https://docs.claude.com/en/docs/claude-code) **skill** that guides you through designing and scaffolding an agent **loop** — an unattended, scheduled, self-verifying agent workflow — for whatever you describe, and writes the files for you.
+**A [Claude Code](https://docs.claude.com/en/docs/claude-code) skill that interviews you, then scaffolds a self-running agent loop — files and all.**
+
+An unattended, scheduled, self-verifying agent workflow for whatever you describe.
+
+[![Skill](https://img.shields.io/badge/Claude_Code-skill-d97757?style=flat-square)](https://docs.claude.com/en/docs/claude-code)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
+[![Status](https://img.shields.io/badge/status-beta-yellow?style=flat-square)](#)
+[![Patterns](https://img.shields.io/badge/loop_patterns-4-7c3aed?style=flat-square)](#the-loop-patterns-pick-the-simplest-that-works)
+[![Building blocks](https://img.shields.io/badge/building_blocks-6-2563eb?style=flat-square)](#the-six-building-blocks--what-each-means-and-why-its-there)
+
+</div>
 
 > Automate a recurring task, schedule an agent, set up monitoring or triage, run an agent overnight, or turn a manual workflow into a self-running one — **even if you never say the word "loop."**
+
+### At a glance
+
+| | |
+|---|---|
+| **What it does** | Turns "automate / schedule / monitor / compare …" into a real, runnable loop folder |
+| **What you get** | A skill, a separate verifier, a state file, human-gates, and a trigger stub |
+| **How you start** | Just describe the task — it triggers without the word "loop" |
+| **What's built in** | A separate checker, a human gate on irreversible actions, and a budget/stop |
+| **Install** | `git clone … ~/.claude/skills/loop-builder` ([jump ↓](#install)) |
 
 ---
 
@@ -21,6 +43,12 @@ Designing that system by hand each time is error-prone — people forget the ver
 ## How the skill works
 
 When it triggers, it runs in phases — **elicit → survey reuse → select → scaffold** — and never skips ahead, because a loop with a missing part is the failure mode, not a shortcut.
+
+```
+  describe          elicit            survey            select           scaffold
+  the task    →   7 decisions   →   reuse what's   →   simplest     →   6 blocks as
+                  one at a time     installed          pattern          real files
+```
 
 ```mermaid
 flowchart TD
@@ -124,10 +152,12 @@ flowchart LR
 
 The skill selects **one** and loads only its reference file (progressive disclosure):
 
-- **ReAct + deterministic verifier** *(the default)* — one workstream whose "done" check is a *program* (tests, a schema check, a predicate script), not a model's opinion.
-- **Evaluator–optimizer** — clear criteria that need *judgement*: a generator proposes, a *separate* evaluator grades against a rubric, repeat.
-- **Orchestrator–workers** — work that *genuinely* parallelizes: an orchestrator fans subtasks to isolated workers, then synthesizes.
-- **Ralph** — the crudest viable loop (a `while` loop against a fixed spec); useful as a baseline and teaching device.
+| Pattern | Best when | "Done" is decided by |
+|---------|-----------|----------------------|
+| **ReAct + deterministic verifier** *(default)* | one workstream with a checkable result | a **program** — tests, schema check, predicate script |
+| **Evaluator–optimizer** | criteria that need *judgement* | a **separate** evaluator grading against a rubric |
+| **Orchestrator–workers** | work that *genuinely* parallelizes | an orchestrator synthesizing isolated workers |
+| **Ralph** | a baseline / teaching device | a crude `while` loop against a fixed spec |
 
 > Guidance the skill repeats: **compose the simplest blocks; don't reach for a framework you can't debug.** A single loop with a deterministic verifier beats an elaborate multi-agent system you can't reason about.
 
