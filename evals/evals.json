@@ -5,31 +5,72 @@
       "id": 1,
       "prompt": "Help me automate triaging my GitHub issues every morning",
       "expected_output": "Triggers loop-builder; walks the seven questions (goal->trigger->discovery->action->verify->state->human gates); recommends ReAct + deterministic verifier; emits populated template; scaffolds six blocks incl. a separate verifier, an external STATE.md, and HUMAN-GATES.md with a budget.",
-      "files": []
+      "files": [],
+      "expectations": [
+        "The loop-builder skill is invoked rather than the task being answered ad hoc",
+        "All seven decisions are elicited before any files are scaffolded",
+        "The goal is expressed as a checkable predicate (e.g. 'no P1 issue lacks an assignee and a plan comment'), not a vibe like 'keep the repo healthy'",
+        "Recommends the ReAct + deterministic-verifier pattern and loads only that one pattern reference",
+        "A populated fill-in template is shown to the user before files are written",
+        "The durable SKILL.md is placed under .claude/skills/<loop-name>/ and the changing STATE.md under loops/<loop-name>/",
+        "A SEPARATE verifier is scaffolded (script or sub-agent), not the generator grading itself",
+        "No mutable run state (progress, what's done) is written into any SKILL.md",
+        "HUMAN-GATES.md is emitted and contains BOTH an irreversible-actions list AND a budget/stop condition",
+        "Any /goal, /loop, or /schedule mechanic is flagged as needing verification against current docs"
+      ]
     },
     {
       "id": 2,
       "prompt": "I want an agent to watch my CI and open a fix PR when the nightly build breaks",
       "expected_output": "Triggers loop-builder; event/schedule trigger; discovery via CI; action gated (opening/merging PR is a human gate); deterministic verifier on build status; STATE.md ledger; budget.",
-      "files": []
+      "files": [],
+      "expectations": [
+        "The loop-builder skill is invoked",
+        "Identifies the trigger as event-driven and notes that /goal and /loop cannot listen for events, so an external launcher (CI/webhook) or a low-frequency poll is required",
+        "The verifier re-runs the build/tests (deterministic) rather than asking a model whether it is fixed",
+        "Recommends an isolated git worktree because parallel file work could collide",
+        "MERGING the PR is listed as a hard human gate in HUMAN-GATES.md (opening a PR may be allowed)",
+        "An external STATE.md ledger is scaffolded under loops/<loop-name>/",
+        "A budget/stop condition is included (e.g. max fix attempts per failure)",
+        "No mutable run state is written into any SKILL.md"
+      ]
     },
     {
       "id": 3,
       "prompt": "Can you set something up to review my inbox each morning and draft replies?",
       "expected_output": "Triggers loop-builder; recommends evaluator-optimizer (drafts need judgement); SENDING email is a hard human gate; external state of handled threads; budget. Never sends autonomously.",
-      "files": []
+      "files": [],
+      "expectations": [
+        "The loop-builder skill is invoked",
+        "Recommends the evaluator-optimizer pattern because drafting replies needs judgement, not just a script",
+        "The verifier is a SEPARATE evaluator (sub-agent or different-model checker) grading drafts against a rubric, distinct from the generator",
+        "SENDING email is listed as a hard human gate; the loop only drafts and never sends autonomously",
+        "An external STATE.md tracks which threads were handled/skipped",
+        "A budget/stop condition is included",
+        "Prompt injection is acknowledged as a reason the send gate is permanent (the loop ingests untrusted email text each cycle)"
+      ]
     },
     {
       "id": 4,
       "prompt": "Fix this bug in my markdown parser where nested lists lose indentation",
       "expected_output": "Should NOT trigger loop-builder — this is a one-off debugging task, not a recurring/unattended workflow.",
-      "files": []
+      "files": [],
+      "expectations": [
+        "The loop-builder skill is NOT invoked",
+        "No seven-question loop interview is started and no loop folder is scaffolded",
+        "The request is treated as a one-off debugging task"
+      ]
     },
     {
       "id": 5,
       "prompt": "Write a one-off script to rename all the files in ./photos to a date-based scheme",
       "expected_output": "Should NOT trigger loop-builder — one-off task, no schedule, no recursive goal, no verification loop.",
-      "files": []
+      "files": [],
+      "expectations": [
+        "The loop-builder skill is NOT invoked",
+        "No loop scaffolding (SKILL.md, STATE.md, HUMAN-GATES.md, verifier) is produced",
+        "The request is treated as a single scripting task with no schedule or recursive goal"
+      ]
     }
   ]
 }

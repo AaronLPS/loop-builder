@@ -247,9 +247,14 @@ must contain:
 
 Refuse to call the loop "done" if either is missing.
 
-## Worked example — morning GitHub triage
+## Worked examples
 
-A complete fill-in, to show the shape of a good answer:
+Three filled-in templates, chosen to span the grid: different patterns, different
+trigger types, and the two gate postures (soft "escalate" vs. a hard stop on an
+irreversible action). Use them to calibrate the shape of a good answer — don't copy
+one verbatim onto a different-shaped problem.
+
+### Example 1 — morning GitHub triage *(ReAct + deterministic · scheduled · soft gate)*
 
 ```
 GOAL (verifiable):      zero P1 issues without an assignee AND a plan comment
@@ -269,6 +274,64 @@ BUDGET / stop:          max 25 issues/run; stop when verifier passes or cap hit
 Pattern: ReAct + deterministic verifier (one workstream, program-checkable goal).
 Comments and labels are reversible, so no hard human gate is required — but the
 *budget* and the *escalate-don't-close* rule still ship.
+
+### Example 2 — inbox draft-replies *(evaluator–optimizer · run-until-done · hard gate)*
+
+```
+GOAL (verifiable):      every unread thread from the last 24h is either drafted-and-
+                        queued or explicitly skipped with a logged reason
+TRIGGER:                run-until-done → you start it when you sit down. No recurring
+                        /loop needed; the loop self-terminates at the goal each run.
+DISCOVERY (find work):  list unread threads in the last 24h  (connector: Gmail MCP)
+ACTION (do work):       write a reply into the drafts folder per thread
+                        (tools: Gmail MCP — DRAFTS ONLY, no send scope)
+VERIFY (separate check): a SEPARATE evaluator sub-agent grades each draft against a
+                        rubric (answers the question, right tone, no overcommitment)
+                        — judgement, not a script (deterministic? n)
+REUSE (existing skills): Gmail MCP → connector (④); codex as a different-model
+                        evaluator (⑤); fallback: a general-purpose sub-agent
+STATE (persist outside): loops/inbox/STATE.md — threads drafted / skipped + reasons
+HUMAN GATES:            SENDING is a hard gate — the loop only drafts; you press send
+KNOWLEDGE → skill:      voice/tone guide, what never to commit to in writing,
+                        who to escalate to instead of answering
+BUDGET / stop:          max 20 threads/run; stop when each is drafted-or-skipped
+```
+
+Pattern: Evaluator–optimizer — drafts need *judgement*, so a separate evaluator
+grades against a rubric (a different-model checker is stronger than a same-model
+one). Sending is irreversible and prompt-injection-exposed, so it is a permanent
+human gate — the single most important line in this loop. Note the trigger: it is
+*you*, not a clock, so there is no `/loop`.
+
+### Example 3 — nightly CI fix *(ReAct + deterministic · event-driven · isolated · hard gate)*
+
+```
+GOAL (verifiable):      latest nightly build is green, OR a fix PR exists linked to
+                        the failure
+TRIGGER:                event-driven → on nightly-build failure. /goal·/loop can't
+                        LISTEN, so either a CI/webhook launcher invokes the loop, or a
+                        low-frequency /loop polls build status and runs only on a new
+                        red build.
+DISCOVERY (find work):  read the failing job log + the diff since last green
+                        (connector: GitHub / CI MCP)
+ACTION (do work):       reproduce, write a fix, open a PR
+                        (tools: gh ; isolation: worktree? y — parallel file work)
+VERIFY (separate check): re-run build/tests on the fix branch; green = pass
+                        (deterministic? y — the build itself is the verifier)
+REUSE (existing skills): GitHub MCP → connector (④); the build command is the
+                        verifier, no external skill; fallback: gh CLI
+STATE (persist outside): loops/ci-watch/STATE.md — failures seen, fix PRs, status
+HUMAN GATES:            opening a PR is fine; MERGING is a hard gate — a human reviews
+KNOWLEDGE → skill:      how to run the build locally, where flaky tests live,
+                        branch / PR conventions
+BUDGET / stop:          max 3 fix attempts/failure; stop when green or a PR is open
+```
+
+Pattern: ReAct + deterministic verifier again (the build is the program-checkable
+predicate), but event-triggered and worktree-isolated because file work runs in
+parallel. The verifier is the same kind as Example 1 yet the *trigger* and
+*isolation* differ — a reminder that pattern, trigger, and isolation are independent
+choices.
 
 ## Output discipline checklist
 

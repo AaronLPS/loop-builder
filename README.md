@@ -193,7 +193,7 @@ loop-builder/                  ← clone this into ~/.claude/skills/loop-builder
 │   ├── verifier_template.sh               generic predicate runner (exits non-zero on fail)
 │   ├── verify_no_p1_unassigned.sh         worked example (operates on gh-style JSON)
 │   └── tests/                             red-green tests + fixtures
-├── evals/evals.json           trigger test prompts (positive + negative)
+├── evals/evals.json           trigger tests (positive + negative) + per-eval expectations
 ├── docs/design-spec.md        how this skill itself was designed
 ├── LICENSE
 └── README.md
