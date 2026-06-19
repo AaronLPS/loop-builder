@@ -188,10 +188,15 @@ loop-builder/                  ← clone this into ~/.claude/skills/loop-builder
 │   ├── pattern-evaluator-optimizer.md
 │   ├── pattern-orchestrator-workers.md
 │   ├── pattern-ralph.md
-│   └── deploy-claude-managed-agents.md     optional deploy target (beta; behind uncertainty flag)
+│   ├── deploy-claude-managed-agents.md     optional deploy target (beta; behind uncertainty flag)
+│   └── skill-bank/                         curated catalog of borrowable external skills/plugins
+│       ├── INDEX.md                        block-tagged entries (pointers only, never vendored)
+│       └── sources.yml                     upstream sources + refresh procedure
 ├── scripts/
 │   ├── verifier_template.sh               generic predicate runner (exits non-zero on fail)
 │   ├── verify_no_p1_unassigned.sh         worked example (operates on gh-style JSON)
+│   ├── lint_skill_bank_index.sh           validates the skill-bank INDEX schema
+│   ├── refresh_skill_bank.sh              reports skill-bank drift vs upstream
 │   └── tests/                             red-green tests + fixtures
 ├── evals/evals.json           trigger tests (positive + negative) + per-eval expectations
 ├── docs/design-spec.md        how this skill itself was designed
@@ -259,10 +264,11 @@ The skill *designs and writes* the loop; you *run* it with Claude Code's native 
 > you on anything it's told to escalate rather than close. (Verify the exact
 > schedule/command syntax against current docs.)
 
-## Test the bundled verifiers
+## Test the bundled scripts
 
 ```bash
 bash scripts/tests/test_verifiers.sh
+bash scripts/tests/test_skill_bank.sh
 ```
 
 ---
