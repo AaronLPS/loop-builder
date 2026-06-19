@@ -211,16 +211,24 @@ Concretely, write:
   user's predicate. If it's a "no P1 unassigned"-style check, adapt
   `scripts/verify_no_p1_unassigned.sh`. The verifier must be *separate* from the
   generator and deterministic where possible.
-- **A trigger stub** — the schedule/event entry. Since `/goal` and `/loop` run a
-  *prompt*, the stub must **name the loop** so its skill loads: e.g.
-  `/goal "<verifiable condition>"  run the <loop-name> loop` (run-until-done), or
-  `/loop <interval>  run the <loop-name> loop` (recurring), optionally combining
-  both into a self-directing, self-terminating loop; `/schedule "<cron>" …` for cron.
-  The prompt ("run the `<loop-name>` loop") is what invokes the installed skill and
-  points it at `loops/<loop-name>/STATE.md`. **Annotate that these mechanics may have
-  changed — verify against current docs.** Never fabricate flags. `/goal` maps
-  directly to the recursive Goal (Q1), so the stub's condition must be the same
-  checkable predicate.
+- **A trigger stub** — how the loop is *launched*. `/goal` and `/loop` run a
+  *prompt*, so the stub must **name the loop** (`run the <loop-name> loop`) to load
+  its skill. Match the launcher to the trigger type from Q2 — **don't default
+  everything to `/loop`**, which only makes sense for a recurring cadence:
+    - **Run-until-done / on-demand** (you start it when there's new input — e.g. a
+      comparison loop): just invoke it, `/goal "<condition>"  run the <loop-name>
+      loop`. **No `/loop`** — it isn't recurring; the trigger is *you*.
+    - **Scheduled** (a cadence): `/schedule "<cron>" …`, or `/loop <interval>` for a
+      simple interval; pair with `/goal "<condition>"` to self-terminate each run.
+    - **Event-driven** (fire when something appears): `/goal`/`/loop` can't *listen*
+      for events. Either **(a) poll** — a low-frequency `/loop <interval>` that checks
+      a queue/inbox and runs only when there's new work — or **(b) a real external
+      launcher** (a git hook, CI/webhook, file-watcher, or a managed runtime; see
+      `references/deploy-claude-managed-agents.md`) that invokes the loop when the
+      event fires.
+  `/goal` maps directly to the recursive Goal (Q1), so its condition must be the same
+  checkable predicate. **Annotate that these mechanics may have changed — verify
+  against current docs; never fabricate flags.**
 - **`HUMAN-GATES.md`** — the irreversible-actions list **and** the budget/stop
   condition, together. This file is mandatory; see below.
 
