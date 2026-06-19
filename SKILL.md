@@ -111,6 +111,11 @@ changes the design**, not an exhaustive inventory:
   the inbox? (e.g. `context7` for official library docs; a GitHub MCP for issues.)
 - **Sub-agents (⑤) / workers** — an existing research or worker agent the loop can
   dispatch rather than hand-rolling one.
+- **Runtime** — is a managed agent runtime available (e.g. **Claude Managed Agents**)
+  that provides scheduling, a grader/verifier, memory, and approval gates *natively*?
+  If so, consider scaffolding for it instead of hand-rolling those blocks — see
+  `references/deploy-claude-managed-agents.md`. It's beta and fast-moving, so verify
+  against current docs and keep a Claude Code fallback.
 
 Two rules when you recommend reuse, because an external skill is *changing* state you
 don't control:

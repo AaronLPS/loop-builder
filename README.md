@@ -125,6 +125,8 @@ The skill selects **one** and loads only its reference file (progressive disclos
 
 > Guidance the skill repeats: **compose the simplest blocks; don't reach for a framework you can't debug.** A single loop with a deterministic verifier beats an elaborate multi-agent system you can't reason about.
 
+**Where it runs** is a separate choice from *what shape it is*. By default the skill scaffolds against Claude Code primitives (`/loop`, worktrees, sub-agents, a bundled verifier, a state file). If you have a managed runtime such as **Claude Managed Agents** — whose native cron schedules, rubric "grader", memory, and review-before-it-lands gates map almost 1:1 onto the six blocks — the skill can target that instead. See [`references/deploy-claude-managed-agents.md`](references/deploy-claude-managed-agents.md) (kept behind an uncertainty flag, since it's a fast-moving beta).
+
 ---
 
 ## Why the implementation is shaped this way
@@ -149,7 +151,8 @@ loop-builder/                  ← clone this into ~/.claude/skills/loop-builder
 │   ├── pattern-react-deterministic-verifier.md
 │   ├── pattern-evaluator-optimizer.md
 │   ├── pattern-orchestrator-workers.md
-│   └── pattern-ralph.md
+│   ├── pattern-ralph.md
+│   └── deploy-claude-managed-agents.md     optional deploy target (beta; behind uncertainty flag)
 ├── scripts/
 │   ├── verifier_template.sh               generic predicate runner (exits non-zero on fail)
 │   ├── verify_no_p1_unassigned.sh         worked example (operates on gh-style JSON)
