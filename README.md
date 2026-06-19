@@ -184,35 +184,42 @@ Just describe what you want — the skill is tuned to trigger without the word "
 - *"I want an agent to watch CI and open a fix PR when the nightly build breaks."*
 - *"Set something up to review my inbox each morning and draft replies."*
 
-It walks the seven questions, surveys reusable skills, recommends a pattern, and scaffolds the loop into `<project>/loops/<loop-name>/`:
+It walks the seven questions, surveys reusable skills, recommends a pattern, and scaffolds the loop. Artifacts are split by durability, so the loop is **invocable by name**:
 
 ```
-loops/<loop-name>/
-├── SKILL.md         the loop's own conventions / rubric (durable, read-only each run)
-├── STATE.md         what's done / open (changing, read + written each run)
+.claude/skills/<loop-name>/      ← DURABLE (installed as a skill, so /goal·/loop can invoke it)
+├── SKILL.md         the loop's own conventions / rubric (read-only each run)
 ├── <verifier>       a SEPARATE check — script or evaluator sub-agent
-├── TRIGGER.md       how to start it (the /goal · /loop · /schedule stub)
-└── HUMAN-GATES.md   irreversible actions that need approval + the budget/stop condition
+├── HUMAN-GATES.md   irreversible actions that need approval + the budget/stop condition
+└── TRIGGER.md       the exact /goal · /loop · /schedule line to start it
+
+loops/<loop-name>/               ← CHANGING (run state, never a skill)
+├── STATE.md         what's done / open (read + written each run)
+└── ...              run inputs / outputs
 ```
+
+The durable skill is installed under `.claude/skills/` for a concrete reason: `/goal` and `/loop` run a *prompt*, not a folder, so the loop is started by a prompt that **invokes its skill by name** — which only works if it's a discoverable skill. State stays in `loops/` because it changes every run.
 
 ### 2. Run the loop it scaffolds
 
 The skill *designs and writes* the loop; you *run* it with Claude Code's native primitives (verify exact commands against current docs — they move fast):
 
 1. **Skim what it generated** — especially `HUMAN-GATES.md` (what it will pause for) and `SKILL.md` (the rules it follows). Fill in any run input it asked for.
-2. **Kick it off** using the stub in `TRIGGER.md`:
-   - **Run-until-done:** `/goal "<the verifiable condition from question 1>"` — Claude works autonomously until that condition holds (or the budget is hit). This is the same checkable predicate the skill made you write.
-   - **Recurring + self-terminating:** `/goal "<condition>" /loop every 30m` — every 30 minutes it checks the condition, works if needed, and stops that run once it's met.
-   - **Plain interval poll:** `/loop 1h <invoke the loop>` — for monitoring-style loops with no single end state.
-3. **What happens each run (cold start):** the agent re-reads `SKILL.md` (conventions) and `STATE.md` (what's already done), finds and does work through its connectors, then the **separate verifier** checks the result. Pass → it records the outcome in `STATE.md` and stops; fail → it revises and loops; budget reached → it stops and flags the run.
+2. **Kick it off** using the stub in `TRIGGER.md`. `/goal` and `/loop` run a *prompt*, so the trigger has to **name the loop** — the prompt `run the <loop-name> loop` invokes the installed skill (and points it at its state folder):
+   - **Run-until-done:** `/goal "<the verifiable condition from question 1>"  run the <loop-name> loop` — Claude works autonomously until that condition holds (or the budget is hit). The condition is the same checkable predicate the skill made you write.
+   - **Recurring + self-terminating:** `/loop <interval>  run the <loop-name> loop` (optionally with `/goal "<condition>"`) — on each tick it works if needed and stops that run once the condition is met.
+   - *If the loop wasn't installed as a skill,* the prompt must instead point at files: *"read `loops/<loop-name>/STATE.md` and the loop's `SKILL.md`, then …"*.
+3. **What happens each run (cold start):** because the prompt invoked the loop's skill, the agent loads that `SKILL.md` (its conventions/rubric) and reads the run's `STATE.md` for what's already done — it doesn't rediscover them on its own; the **trigger prompt is what points it there**. Then it works through its connectors and the **separate verifier** checks the result. Pass → it records the outcome in `STATE.md` and stops; fail → it revises and loops; budget reached → it stops and flags the run.
 4. **Human gates interrupt it.** When it reaches an irreversible action (merge, send, spend, delete, publish, push), it **pauses and asks you** instead of doing it. It never crosses those autonomously — that's the defense against acting on bad or injected input.
 5. **Watch progress** in `STATE.md` (or the board/issues you chose) — it's written every run, so you can see what passed and what's open at a glance.
 6. **Stop / resume freely.** Because state lives *outside* the context, you can cancel the `/loop` and restart later; it resumes from `STATE.md` rather than redoing finished work. It also self-stops at the verifiable goal or the budget (max iterations / tokens / wall-clock).
 
-> Example: for "triage P1 issues every morning", the stub is roughly
-> `/goal "every open P1 issue has an assignee and a plan comment" /loop 0 8 * * 1-5` —
-> each weekday at 08:00 it triages until the condition holds, pausing for you on
-> anything it's told to escalate rather than close.
+> Example: for "triage P1 issues every morning", the installed skill is
+> `.claude/skills/issue-triage/`, and the stub is roughly
+> `/goal "every open P1 issue has an assignee and a plan comment"  run the issue-triage loop`
+> on a weekday-morning schedule — it triages until the condition holds, pausing for
+> you on anything it's told to escalate rather than close. (Verify the exact
+> schedule/command syntax against current docs.)
 
 ## Test the bundled verifiers
 

@@ -175,34 +175,49 @@ BUDGET / stop:          ____   (max iterations | token cap | wall-clock)
 
 ### 3b. Scaffold the six building blocks
 
-Ask the user where the loop should live (default: a new folder in the current
-project, e.g. `<project>/loops/<loop-name>/`). Then generate these artifacts.
-Every loop gets **all six**; a missing block is what breaks (see the table).
+Split the artifacts by durability so the loop is **invocable by name**, then
+confirm the locations with the user (these are the defaults):
+
+- **Durable → an installed skill.** Put the loop's own `SKILL.md` (plus its verifier
+  and any templates) under `.claude/skills/<loop-name>/`. This matters mechanically:
+  `/goal` and `/loop` run a *prompt*, not a folder, so the loop is started by a
+  prompt that **invokes its skill by name/description** (e.g. "run the `<loop-name>`
+  loop"). A `SKILL.md` left under `loops/` is *not* a discoverable skill and can't be
+  invoked that way — it would have to be read by explicit path instead.
+- **Changing → a state folder.** Put run state under `<project>/loops/<loop-name>/`
+  (`STATE.md`, plus any run inputs/outputs). Read and written every run.
+
+Every loop gets **all six** blocks; a missing one is what breaks (see the table).
 
 | # | Block | What you write | Durable or changing |
 |---|---|---|---|
 | 1 | **Scheduling** | A trigger stub (cron line / `/schedule` / `/loop` / `/goal <condition>` / run-until-verifier) | durable |
 | 2 | **Isolation** | A note/command for git worktrees *if* file work runs in parallel | durable |
-| 3 | **Skill** | The loop's **own** `SKILL.md` — conventions only | **durable** |
+| 3 | **Skill** | The loop's **own** `SKILL.md`, **installed under `.claude/skills/<loop-name>/`** — conventions only | **durable** |
 | 4 | **Connectors** | Named MCP/tools for discovery + action | durable |
 | 5 | **Verifier** | A **separate** check — start from `scripts/verifier_template.sh` | durable |
-| 6 | **State** | `STATE.md` ledger (or board) — what's done / open | **changing** |
+| 6 | **State** | `STATE.md` ledger (or board) in `loops/<loop-name>/` — what's done / open | **changing** |
 
-Concretely, write into the loop folder:
+Concretely, write:
 
-- **`SKILL.md`** — the loop's own skill: its goal, conventions, the pattern it uses,
-  how to run it, and what "done" means. **Conventions only — never progress.**
-- **`STATE.md`** — a ledger the loop reads and writes each run: a table of items
-  with status, plus "last run" notes. This is the changing half; keep it out of the
-  skill.
+- **`.claude/skills/<loop-name>/SKILL.md`** — the loop's own skill: its goal,
+  conventions, the pattern it uses, how to run it, and what "done" means. Installing
+  it here is what makes the loop invocable by a prompt. **Conventions only — never
+  progress.**
+- **`loops/<loop-name>/STATE.md`** — a ledger the loop reads and writes each run: a
+  table of items with status, plus "last run" notes. This is the changing half; keep
+  it out of the skill.
 - **A verifier script** — copy `scripts/verifier_template.sh` and wire it to the
   user's predicate. If it's a "no P1 unassigned"-style check, adapt
   `scripts/verify_no_p1_unassigned.sh`. The verifier must be *separate* from the
   generator and deterministic where possible.
-- **A trigger stub** — the schedule/event entry. Use Claude Code mechanics
-  concretely (`/goal "<verifiable condition>"` for run-until-done, `/loop` for an
-  interval — they combine into a self-directing, self-terminating loop;
-  `/schedule "<cron>" …`; worktrees) but **annotate that these mechanics may have
+- **A trigger stub** — the schedule/event entry. Since `/goal` and `/loop` run a
+  *prompt*, the stub must **name the loop** so its skill loads: e.g.
+  `/goal "<verifiable condition>"  run the <loop-name> loop` (run-until-done), or
+  `/loop <interval>  run the <loop-name> loop` (recurring), optionally combining
+  both into a self-directing, self-terminating loop; `/schedule "<cron>" …` for cron.
+  The prompt ("run the `<loop-name>` loop") is what invokes the installed skill and
+  points it at `loops/<loop-name>/STATE.md`. **Annotate that these mechanics may have
   changed — verify against current docs.** Never fabricate flags. `/goal` maps
   directly to the recursive Goal (Q1), so the stub's condition must be the same
   checkable predicate.
