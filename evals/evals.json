@@ -71,6 +71,20 @@
         "No loop scaffolding (SKILL.md, STATE.md, HUMAN-GATES.md, verifier) is produced",
         "The request is treated as a single scripting task with no schedule or recursive goal"
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "I want to set up an overnight agent that keeps our docs site's broken links fixed, and I'd rather reuse good existing tooling than build link-checking from scratch",
+      "expected_output": "Triggers loop-builder; during Phase 1.5 it searches the skill-bank (references/skill-bank/INDEX.md) in addition to installed skills, surfaces a relevant borrowable entry mapped to a loop block (e.g. a verifier or connector), and records it with source + install pointer + a named fallback. Recommends, never inlines external code.",
+      "files": [],
+      "expectations": [
+        "The loop-builder skill is invoked",
+        "Phase 1.5 consults the skill-bank index (references/skill-bank/INDEX.md), not only installed skills",
+        "At least one borrowable bank entry is mapped to a specific loop block (e.g. verifier or connector)",
+        "Each recommended bank entry is recorded with its source and install pointer plus a NAMED fallback",
+        "External code is recommended/referenced, never inlined into the scaffolded loop",
+        "The recommendation carries the 'verify unverified mechanics against source' caution"
+      ]
     }
   ]
 }
