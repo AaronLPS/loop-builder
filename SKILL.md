@@ -98,8 +98,16 @@ Before choosing a pattern, check what's **already installed** that can *serve a
 block* instead of being built from scratch. This is the doc's "compose blocks; don't
 reach for a framework you can't debug" principle applied to the build itself — the
 loop shouldn't re-derive a capability that already exists as a skill, connector, or
-sub-agent. Use `find-skills` (or scan the available skills / MCP list) to discover
-options.
+sub-agent. Search **two** sources and map both to the loop's blocks:
+
+- **Installed** — use `find-skills` (or scan the available skills / MCP list) for
+  capabilities already on the machine (ready to use immediately).
+- **skill-bank** — search `references/skill-bank/INDEX.md`, a curated catalog of
+  proven external skills/plugins/workflows tagged by the block each can serve, for
+  capabilities worth *borrowing* (these would need installing). Recommend-and-record
+  only: surface the source + install pointer + a named fallback; never inline
+  external code. Bank entries are externally evolving — keep the "verify unverified
+  mechanics" flag on them.
 
 Map what you find to the blocks the loop needs — recommend only what **genuinely
 changes the design**, not an exhaustive inventory:
