@@ -66,7 +66,7 @@ The skill recommends the **simplest pattern that works** and then generates **si
 
 ```mermaid
 flowchart LR
-    TRG["① Trigger<br/>schedule · event · run-until-done"] --> GEN
+    TRG["① Trigger<br/>/goal '&lt;condition&gt;' · run-until-done<br/>/loop · interval · /schedule · cron · event"] --> GEN
 
     subgraph LOOP["The loop — cold start on every run"]
         direction LR
@@ -176,13 +176,43 @@ Or drop it into a single project at `<project>/.claude/skills/loop-builder/`.
 
 ## Use
 
+### 1. Build a loop
+
 Just describe what you want — the skill is tuned to trigger without the word "loop":
 
 - *"Help me automate triaging my GitHub issues every morning."*
 - *"I want an agent to watch CI and open a fix PR when the nightly build breaks."*
 - *"Set something up to review my inbox each morning and draft replies."*
 
-It will walk the seven questions, recommend a pattern, and scaffold the loop into `<project>/loops/<loop-name>/` — including a separate verifier, an external `STATE.md`, and a `HUMAN-GATES.md` (gates + budget).
+It walks the seven questions, surveys reusable skills, recommends a pattern, and scaffolds the loop into `<project>/loops/<loop-name>/`:
+
+```
+loops/<loop-name>/
+├── SKILL.md         the loop's own conventions / rubric (durable, read-only each run)
+├── STATE.md         what's done / open (changing, read + written each run)
+├── <verifier>       a SEPARATE check — script or evaluator sub-agent
+├── TRIGGER.md       how to start it (the /goal · /loop · /schedule stub)
+└── HUMAN-GATES.md   irreversible actions that need approval + the budget/stop condition
+```
+
+### 2. Run the loop it scaffolds
+
+The skill *designs and writes* the loop; you *run* it with Claude Code's native primitives (verify exact commands against current docs — they move fast):
+
+1. **Skim what it generated** — especially `HUMAN-GATES.md` (what it will pause for) and `SKILL.md` (the rules it follows). Fill in any run input it asked for.
+2. **Kick it off** using the stub in `TRIGGER.md`:
+   - **Run-until-done:** `/goal "<the verifiable condition from question 1>"` — Claude works autonomously until that condition holds (or the budget is hit). This is the same checkable predicate the skill made you write.
+   - **Recurring + self-terminating:** `/goal "<condition>" /loop every 30m` — every 30 minutes it checks the condition, works if needed, and stops that run once it's met.
+   - **Plain interval poll:** `/loop 1h <invoke the loop>` — for monitoring-style loops with no single end state.
+3. **What happens each run (cold start):** the agent re-reads `SKILL.md` (conventions) and `STATE.md` (what's already done), finds and does work through its connectors, then the **separate verifier** checks the result. Pass → it records the outcome in `STATE.md` and stops; fail → it revises and loops; budget reached → it stops and flags the run.
+4. **Human gates interrupt it.** When it reaches an irreversible action (merge, send, spend, delete, publish, push), it **pauses and asks you** instead of doing it. It never crosses those autonomously — that's the defense against acting on bad or injected input.
+5. **Watch progress** in `STATE.md` (or the board/issues you chose) — it's written every run, so you can see what passed and what's open at a glance.
+6. **Stop / resume freely.** Because state lives *outside* the context, you can cancel the `/loop` and restart later; it resumes from `STATE.md` rather than redoing finished work. It also self-stops at the verifiable goal or the budget (max iterations / tokens / wall-clock).
+
+> Example: for "triage P1 issues every morning", the stub is roughly
+> `/goal "every open P1 issue has an assignee and a plan comment" /loop 0 8 * * 1-5` —
+> each weekday at 08:00 it triages until the condition holds, pausing for you on
+> anything it's told to escalate rather than close.
 
 ## Test the bundled verifiers
 
