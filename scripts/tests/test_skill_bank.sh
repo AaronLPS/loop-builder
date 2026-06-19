@@ -30,6 +30,16 @@ check "lint: malformed index -> fail" 1 $?
 bash "$SCRIPTS/lint_skill_bank_index.sh" --file /nonexistent/path.md >/dev/null 2>&1
 check "lint: missing file -> exit 2" 2 $?
 
+# --- refresh_skill_bank.sh -------------------------------------------------
+bash "$SCRIPTS/refresh_skill_bank.sh" --index "$FIX/index_good.md" --upstream "$FIX/upstream_insync.txt" >/dev/null 2>&1
+check "refresh: index matches upstream -> in sync" 0 $?
+
+bash "$SCRIPTS/refresh_skill_bank.sh" --index "$FIX/index_good.md" --upstream "$FIX/upstream_drift.txt" >/dev/null 2>&1
+check "refresh: added/removed drift -> non-zero" 1 $?
+
+bash "$SCRIPTS/refresh_skill_bank.sh" --index "$FIX/index_good.md" --upstream "$FIX/upstream_stale.txt" >/dev/null 2>&1
+check "refresh: stale ref -> non-zero" 1 $?
+
 echo "----"
 if [ "$fails" -eq 0 ]; then
   echo "ALL TESTS PASSED"
