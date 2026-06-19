@@ -18,6 +18,9 @@
 - key: awesome-claude-skills
   repo: https://github.com/ComposioHQ/awesome-claude-skills
   list: "# README-curated — it is itself a list; pull the standout linked skills"
+  # Note: this is an aggregator list. An entry's INDEX `source` may point at the
+  # linked skill's own repo (and carry that repo's license), while `synced` tracks
+  # this list repo. Drift detection therefore watches the list, not each linked repo.
 
 - key: gstack
   repo: https://github.com/garrytan/gstack
