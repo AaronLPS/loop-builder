@@ -66,7 +66,13 @@ The skill recommends the **simplest pattern that works** and then generates **si
 
 ```mermaid
 flowchart LR
-    TRG["① Trigger<br/>/goal '&lt;condition&gt;' · run-until-done<br/>/loop · interval · /schedule · cron · event"] --> GEN
+    subgraph TRG["① Trigger — pick one (see Q2)"]
+        direction TB
+        T1["run-until-done / on-demand<br/>invoke skill · /goal · no /loop"]
+        T2["scheduled<br/>/schedule cron · /loop interval"]
+        T3["event-driven<br/>external launcher<br/>or /loop polling a queue"]
+    end
+    TRG --> GEN
 
     subgraph LOOP["The loop — cold start on every run"]
         direction LR
