@@ -16,11 +16,13 @@ set -u
 INDEX="references/skill-bank/INDEX.md"
 UPSTREAM=""
 
+usage() { echo "usage: refresh_skill_bank.sh --upstream FILE [--index FILE]" >&2; exit 2; }
+
 while [ $# -gt 0 ]; do
   case "$1" in
-    --upstream) UPSTREAM="${2:-}"; shift 2 ;;
-    --index)    INDEX="${2:-}"; shift 2 ;;
-    *) echo "usage: refresh_skill_bank.sh --upstream FILE [--index FILE]" >&2; exit 2 ;;
+    --upstream) [ $# -lt 2 ] && usage; UPSTREAM="$2"; shift 2 ;;
+    --index)    [ $# -lt 2 ] && usage; INDEX="$2"; shift 2 ;;
+    *) usage ;;
   esac
 done
 
@@ -33,7 +35,8 @@ if [ ! -f "$UPSTREAM" ]; then echo "refresh: upstream file not found: $UPSTREAM"
 
 trim() { local s="$1"; s="${s#"${s%%[![:space:]]*}"}"; s="${s%"${s##*[![:space:]]}"}"; printf '%s' "$s"; }
 
-idx_tmp="$(mktemp)"; up_tmp="$(mktemp)"
+idx_tmp="$(mktemp)" || { echo "refresh: mktemp failed" >&2; exit 2; }
+up_tmp="$(mktemp)"  || { echo "refresh: mktemp failed" >&2; exit 2; }
 trap 'rm -f "$idx_tmp" "$up_tmp"' EXIT
 
 # INDEX data rows -> "name ref" (ref from the synced column's <owner/repo>@<ref>; '-'
@@ -64,13 +67,22 @@ grep -vE '^[[:space:]]*(#|$)' "$UPSTREAM" | while IFS= read -r l; do
   printf '%s %s\n' "$n" "$r"
 done >> "$up_tmp"
 
-idx_names="$(awk '{print $1}' "$idx_tmp" | sort -u)"
-up_names="$(awk '{print $1}' "$up_tmp" | sort -u)"
+idx_names="$(awk '{print $1}' "$idx_tmp" | LC_ALL=C sort -u)"
+up_names="$(awk '{print $1}' "$up_tmp" | LC_ALL=C sort -u)"
 
-added="$(comm -13 <(printf '%s\n' "$idx_names") <(printf '%s\n' "$up_names"))"
-removed="$(comm -23 <(printf '%s\n' "$idx_names") <(printf '%s\n' "$up_names"))"
+# emit the list only when non-empty, so comm never sees a phantom blank line
+emit() { [ -n "$1" ] && printf '%s\n' "$1" || true; }
+
+added="$(comm -13 <(emit "$idx_names") <(emit "$up_names"))"
+removed="$(comm -23 <(emit "$idx_names") <(emit "$up_names"))"
 stale="$(awk '
-  NR==FNR { if ($2 != "-") iref[$1]=$2; next }
+  NR==FNR {
+    if ($2 != "-") {
+      if ($1 in iref) { print "WARN: duplicate index entry: "$1 > "/dev/stderr" }
+      else { iref[$1] = $2 }
+    }
+    next
+  }
   { if ($2 != "-" && ($1 in iref) && iref[$1] != $2) print $1" (index "iref[$1]" vs upstream "$2")" }
 ' "$idx_tmp" "$up_tmp")"
 

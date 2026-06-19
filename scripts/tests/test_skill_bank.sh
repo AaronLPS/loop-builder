@@ -40,6 +40,12 @@ check "refresh: added/removed drift -> non-zero" 1 $?
 bash "$SCRIPTS/refresh_skill_bank.sh" --index "$FIX/index_good.md" --upstream "$FIX/upstream_stale.txt" >/dev/null 2>&1
 check "refresh: stale ref -> non-zero" 1 $?
 
+bash "$SCRIPTS/refresh_skill_bank.sh" --index "$FIX/index_good.md" --upstream "$FIX/upstream_empty.txt" >/dev/null 2>&1
+check "refresh: empty upstream -> all removed (non-zero)" 1 $?
+
+timeout 5 bash "$SCRIPTS/refresh_skill_bank.sh" --upstream >/dev/null 2>&1
+check "refresh: --upstream with no value -> exit 2 (no hang)" 2 $?
+
 echo "----"
 if [ "$fails" -eq 0 ]; then
   echo "ALL TESTS PASSED"
