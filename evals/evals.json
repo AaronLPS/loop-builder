@@ -1,0 +1,35 @@
+{
+  "skill_name": "loop-builder",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Help me automate triaging my GitHub issues every morning",
+      "expected_output": "Triggers loop-builder; walks the seven questions (goal->trigger->discovery->action->verify->state->human gates); recommends ReAct + deterministic verifier; emits populated template; scaffolds six blocks incl. a separate verifier, an external STATE.md, and HUMAN-GATES.md with a budget.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I want an agent to watch my CI and open a fix PR when the nightly build breaks",
+      "expected_output": "Triggers loop-builder; event/schedule trigger; discovery via CI; action gated (opening/merging PR is a human gate); deterministic verifier on build status; STATE.md ledger; budget.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Can you set something up to review my inbox each morning and draft replies?",
+      "expected_output": "Triggers loop-builder; recommends evaluator-optimizer (drafts need judgement); SENDING email is a hard human gate; external state of handled threads; budget. Never sends autonomously.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Fix this bug in my markdown parser where nested lists lose indentation",
+      "expected_output": "Should NOT trigger loop-builder — this is a one-off debugging task, not a recurring/unattended workflow.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Write a one-off script to rename all the files in ./photos to a date-based scheme",
+      "expected_output": "Should NOT trigger loop-builder — one-off task, no schedule, no recursive goal, no verification loop.",
+      "files": []
+    }
+  ]
+}

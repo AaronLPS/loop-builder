@@ -1,0 +1,5 @@
+[
+  {"number": 101, "title": "DB connection pool exhausted", "labels": ["P1"], "assignee": "alice"},
+  {"number": 102, "title": "Login 500s under load", "labels": ["P1", "bug"], "assignee": "bob"},
+  {"number": 103, "title": "Typo in footer", "labels": ["P3"], "assignee": null}
+]
