@@ -27,6 +27,9 @@ check "lint: well-formed index -> pass" 0 $?
 bash "$SCRIPTS/lint_skill_bank_index.sh" --file "$FIX/index_bad.md" >/dev/null 2>&1
 check "lint: malformed index -> fail" 1 $?
 
+bash "$SCRIPTS/lint_skill_bank_index.sh" --file /nonexistent/path.md >/dev/null 2>&1
+check "lint: missing file -> exit 2" 2 $?
+
 echo "----"
 if [ "$fails" -eq 0 ]; then
   echo "ALL TESTS PASSED"

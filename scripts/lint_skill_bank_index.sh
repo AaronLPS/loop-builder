@@ -29,7 +29,7 @@ while IFS= read -r line; do
     *) continue ;;
   esac
   # skip separator rows like |---|---|
-  if printf '%s' "$line" | grep -qE '^\|[[:space:]]*-{3,}'; then continue; fi
+  if printf '%s' "$line" | grep -qE '^\|[[:space:]]*:?-{3,}:?[[:space:]]*\|'; then continue; fi
 
   body="${line#|}"; body="${body%|}"
   IFS='|' read -ra raw <<< "$body"
@@ -64,6 +64,9 @@ while IFS= read -r line; do
   esac
 
   IFS=',' read -ra btoks <<< "$blocks"
+  if [ "${#btoks[@]}" -eq 0 ]; then
+    echo "FAIL: $rid empty blocks"; violations=$((violations + 1))
+  fi
   for b in "${btoks[@]}"; do
     b="$(trim "$b")"
     case "$b" in
