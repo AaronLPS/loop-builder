@@ -1,0 +1,30 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verifier tests
+        run: bash scripts/tests/test_verifiers.sh
+
+      - name: skill-bank tests
+        run: bash scripts/tests/test_skill_bank.sh
+
+      - name: Lint recommended list
+        run: bash scripts/lint_skill_bank_recommended.sh
+
+      - name: Lint catalogs
+        run: |
+          for c in references/skill-bank/catalog/*.md; do
+            bash scripts/lint_skill_bank_catalog.sh --file "$c"
+          done
+
+      - name: Evals parse
+        run: python3 -c "import json; json.load(open('evals/evals.json'))"
