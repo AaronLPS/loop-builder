@@ -190,17 +190,18 @@ loop-builder/                  ← clone this into ~/.claude/skills/loop-builder
 │   ├── pattern-ralph.md
 │   ├── deploy-claude-managed-agents.md     optional deploy target (beta; behind uncertainty flag)
 │   └── skill-bank/                         catalog of borrowable external skills/plugins
-│       ├── INDEX.md                        Tier 1: curated block-tagged standouts (loaded every build)
-│       ├── catalog/                        Tier 2: full per-source listings (read on demand)
+│       ├── recommended.md                  curated standouts (preferred by the search sub-agent)
+│       ├── catalog/                        comprehensive per-source listings (searched on demand)
+│       ├── search-agent.md                 prompt for the skill-bank search sub-agent
 │       └── sources.yml                     upstream sources + refresh/build procedure
 ├── scripts/
 │   ├── verifier_template.sh               generic predicate runner (exits non-zero on fail)
 │   ├── verify_no_p1_unassigned.sh         worked example (operates on gh-style JSON)
-│   ├── lint_skill_bank_index.sh           validates the Tier-1 INDEX schema
-│   ├── refresh_skill_bank.sh              reports Tier-1 drift vs upstream
-│   ├── format_catalog.sh                  Tier-2: SKILL.md frontmatter -> catalog rows
-│   ├── build_skill_bank_catalog.sh        Tier-2: generate per-source catalogs from upstream
-│   ├── lint_skill_bank_catalog.sh         validates Tier-2 catalog schema
+│   ├── lint_skill_bank_recommended.sh     validates the curated recommended-list schema
+│   ├── refresh_skill_bank.sh              reports recommended-list drift vs upstream
+│   ├── format_catalog.sh                  SKILL.md frontmatter -> catalog rows
+│   ├── build_skill_bank_catalog.sh        generate per-source catalogs from upstream
+│   ├── lint_skill_bank_catalog.sh         validates catalog schema
 │   └── tests/                             red-green tests + fixtures
 ├── evals/evals.json           trigger tests (positive + negative) + per-eval expectations
 ├── docs/design-spec.md        how this skill itself was designed
