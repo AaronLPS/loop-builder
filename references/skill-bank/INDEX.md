@@ -5,7 +5,10 @@ building a loop. Pointers only — nothing here is vendored. Each entry is tagge
 loop block it can serve: (1) scheduling, (2) isolation, (3) skill/conventions,
 (4) connectors, (5) verifier, (6) state. Borrow by recommend-and-record: cite the
 source + install pointer + a named fallback; never inline external code. Sources and
-the refresh procedure live in `sources.yml`.
+the refresh procedure live in `sources.yml`. This file is **Tier 1** — the curated
+standouts, loaded on every loop build. For comprehensive coverage, `catalog/<source>.md`
+holds the full per-source listing (auto-generated), read on demand when these standouts
+don't cover a block the loop needs.
 
 | name | type | blocks | purpose | source | install | license | synced |
 |------|------|--------|---------|--------|---------|---------|--------|

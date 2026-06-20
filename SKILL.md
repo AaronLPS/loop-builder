@@ -104,16 +104,25 @@ time, in order, and map both to the loop's blocks.** Neither is optional.
 **1.5a — Installed.** Use `find-skills` (or scan the available skills / MCP list) for
 capabilities already on the machine (ready to use immediately).
 
-**1.5b — skill-bank — do not skip, even if 1.5a already seems to cover a block.**
-**Read `references/skill-bank/INDEX.md`** (a curated catalog of proven external
-skills/plugins/workflows, each tagged by the block it serves) and scan it for the
-blocks this loop needs. The whole point is to surface proven prior art *before you
-settle*, so you compose instead of rebuild — an installed capability covering a block
-is exactly when people skip this and miss a better-fitting borrow. Recommend-and-record
-only: surface the source + install pointer + a named fallback; never inline external
-code. Bank entries are externally evolving — keep the "verify unverified mechanics"
-flag on them. If nothing in the bank fits, record that explicitly ("skill-bank: none
-applicable — <reason>") rather than silently skipping the read.
+**1.5b — skill-bank — do not skip, even if 1.5a already seems to cover a block.** The
+bank has two tiers; use them in order:
+
+*Tier 1 (always).* **Read `references/skill-bank/INDEX.md`** — a curated, block-tagged
+catalog of standout external skills/plugins/workflows — and scan it for the blocks
+this loop needs.
+
+*Tier 2 (when Tier 1 falls short).* For any block the loop needs that the Tier-1
+standouts don't cover well, **read the relevant `references/skill-bank/catalog/<source>.md`**
+— the full per-source listing (name + one-line description) — and judge candidates by
+their description. Widen only the *uncovered* block(s), and only the source(s)
+plausibly holding them — not every catalog. Record "skill-bank: none applicable —
+<reason>" only *after* this widening, never before.
+
+Borrow semantics are unchanged: recommend-and-record only (surface source + install
+pointer + a named fallback; never inline external code), and confirm license and
+mechanics against source at borrow time. The point is to surface proven prior art
+before you settle, so you compose instead of rebuild — an installed capability
+covering a block is exactly when people skip this and miss a better-fitting borrow.
 
 Map what you find — from **both** the installed set (1.5a) and the skill-bank INDEX
 (1.5b) — to the blocks the loop needs; recommend only what **genuinely changes the
@@ -361,7 +370,7 @@ Before declaring the loop scaffolded, confirm:
 
 - [ ] All seven decisions answered; goal is a checkable predicate.
 - [ ] **Installed** capabilities surveyed (1.5a — find-skills / MCP list).
-- [ ] **skill-bank INDEX consulted** (1.5b — `references/skill-bank/INDEX.md`): relevant entries shortlisted, or "none applicable — <reason>" recorded. Not skippable.
+- [ ] **skill-bank consulted** (1.5b): Tier-1 `INDEX.md` scanned; for any block its standouts don't cover, the relevant Tier-2 `catalog/<source>.md` was read. "none applicable — <reason>" recorded only after that widening. Not skippable.
 - [ ] Anything wired in (installed or bank) has a named fallback.
 - [ ] One pattern chosen; only its reference was loaded.
 - [ ] Populated template shown to the user.
