@@ -59,6 +59,16 @@ bash "$SCRIPTS/format_catalog.sh" < "$fmt_in" | diff -u - "$FIX/catalog_expected
 check "format_catalog: fixtures -> expected table" 0 $?
 rm -f "$fmt_in"
 
+# --- lint_skill_bank_catalog.sh --------------------------------------------
+bash "$SCRIPTS/lint_skill_bank_catalog.sh" --file "$FIX/catalog_good.md" >/dev/null 2>&1
+check "catalog lint: well-formed -> pass" 0 $?
+
+bash "$SCRIPTS/lint_skill_bank_catalog.sh" --file "$FIX/catalog_bad.md" >/dev/null 2>&1
+check "catalog lint: malformed -> fail" 1 $?
+
+bash "$SCRIPTS/lint_skill_bank_catalog.sh" --file /nonexistent/catalog.md >/dev/null 2>&1
+check "catalog lint: missing file -> exit 2" 2 $?
+
 echo "----"
 if [ "$fails" -eq 0 ]; then
   echo "ALL TESTS PASSED"
