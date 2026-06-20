@@ -54,8 +54,13 @@ When it triggers, it runs in phases — **elicit → survey reuse → select →
 flowchart TD
     U["You: 'automate / schedule / monitor / compare ...'"] --> T{loop-builder triggers}
     T --> P1["Phase 1 · ELICIT<br/>the 7 decisions, one at a time"]
-    P1 --> SV["Phase 1.5 · SURVEY REUSE<br/>which installed skills / MCPs / sub-agents<br/>can serve a block?"]
-    SV --> P2["Phase 2 · SELECT<br/>simplest fitting pattern<br/>(load only that reference)"]
+    P1 --> A
+    subgraph SV["Phase 1.5 · SURVEY REUSE"]
+      direction TB
+      A["1.5a · installed<br/>skills / MCPs / sub-agents already on the machine"] --> B
+      B["1.5b · skill-bank search sub-agent<br/>reads recommended.md (curated standouts)<br/>+ catalog/*.md — 5 sources, searched on demand"]
+    end
+    B --> P2["Phase 2 · SELECT<br/>simplest fitting pattern<br/>(load only that reference)"]
     P2 --> P3["Phase 3 · EMIT<br/>the fill-in template, populated"]
     P3 --> SC["SCAFFOLD the 6 building blocks<br/>as real files"]
     SC --> OUT["A loop folder you can run"]
@@ -84,7 +89,7 @@ Every loop, whatever its purpose, comes down to seven decisions. Each maps to a 
 
 ### Survey reuse before building (Phase 1.5)
 
-Once the decisions are clear, the skill checks **what's already installed** that can *serve a block* rather than be rebuilt — an existing skill, MCP connector, or sub-agent. This is the "compose blocks; don't reach for a framework you can't debug" principle applied to the build itself: the loop shouldn't re-derive a capability it already has. Findings are mapped to blocks (e.g. a different-model skill as the **verifier**, an MCP as a **connector**, a research agent as a **worker**), and anything wired in gets a **named fallback** — because an external skill is *changing* state you don't control, and a cold start must still work if it's missing or has changed.
+Once the decisions are clear, the skill surveys reuse in two passes. **1.5a — installed:** it checks **what's already on the machine** that can *serve a block* rather than be rebuilt — an existing skill, MCP connector, or sub-agent. **1.5b — the skill-bank:** it dispatches a search sub-agent over the bundled `references/skill-bank/` — `recommended.md` (curated standouts) plus the comprehensive `catalog/*.md` listings across five upstream sources — to surface proven external prior art for any block the installed set doesn't already cover. This is the "compose blocks; don't reach for a framework you can't debug" principle applied to the build itself: the loop shouldn't re-derive a capability it already has, or hand-roll one the ecosystem has already solved. Findings from both passes are mapped to blocks (e.g. a different-model skill as the **verifier**, an MCP as a **connector**, a research agent as a **worker**), and anything wired in gets a **named fallback** — because an external skill is *changing* state you don't control, and a cold start must still work if it's missing or has changed.
 
 ---
 
