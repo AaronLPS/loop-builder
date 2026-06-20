@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# Tests for skill-bank tooling: the recommended-list linter, the catalog tooling, and the refresh drift checker.
+# Same red-green contract as test_verifiers.sh (exit 0 == clean / in-sync).
+# Run: bash scripts/tests/test_skill_bank.sh
+set -u
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPTS="$(cd "$HERE/.." && pwd)"
+ROOT="$(cd "$SCRIPTS/.." && pwd)"
+FIX="$HERE/fixtures/skill_bank"
+fails=0
+
+check() {  # check <description> <expected_exit> <actual_exit>
+  local desc="$1" want="$2" got="$3"
+  if [ "$want" = "$got" ]; then
+    echo "PASS: $desc"
+  else
+    echo "FAIL: $desc (expected exit $want, got $got)"
+    fails=$((fails + 1))
+  fi
+}
+
+# --- lint_skill_bank_recommended.sh ----------------------------------------------
+bash "$SCRIPTS/lint_skill_bank_recommended.sh" --file "$FIX/index_good.md" >/dev/null 2>&1
+check "lint: well-formed index -> pass" 0 $?
+
+bash "$SCRIPTS/lint_skill_bank_recommended.sh" --file "$FIX/index_bad.md" >/dev/null 2>&1
+check "lint: malformed index -> fail" 1 $?
+
+bash "$SCRIPTS/lint_skill_bank_recommended.sh" --file /nonexistent/path.md >/dev/null 2>&1
+check "lint: missing file -> exit 2" 2 $?
+
+# the real curated list must always lint clean
+bash "$SCRIPTS/lint_skill_bank_recommended.sh" --file "$ROOT/references/skill-bank/recommended.md" >/dev/null 2>&1
+check "lint: seeded recommended.md is clean" 0 $?
+
+# --- refresh_skill_bank.sh -------------------------------------------------
+bash "$SCRIPTS/refresh_skill_bank.sh" --index "$FIX/index_good.md" --upstream "$FIX/upstream_insync.txt" >/dev/null 2>&1
+check "refresh: index matches upstream -> in sync" 0 $?
+
+bash "$SCRIPTS/refresh_skill_bank.sh" --index "$FIX/index_good.md" --upstream "$FIX/upstream_drift.txt" >/dev/null 2>&1
+check "refresh: added/removed drift -> non-zero" 1 $?
+
+bash "$SCRIPTS/refresh_skill_bank.sh" --index "$FIX/index_good.md" --upstream "$FIX/upstream_stale.txt" >/dev/null 2>&1
+check "refresh: stale ref -> non-zero" 1 $?
+
+bash "$SCRIPTS/refresh_skill_bank.sh" --index "$FIX/index_good.md" --upstream "$FIX/upstream_empty.txt" >/dev/null 2>&1
+check "refresh: empty upstream -> all removed (non-zero)" 1 $?
+
+timeout 5 bash "$SCRIPTS/refresh_skill_bank.sh" --upstream >/dev/null 2>&1
+check "refresh: --upstream with no value -> exit 2 (no hang)" 2 $?
+
+# --- format_catalog.sh -----------------------------------------------------
+fmt_in="$(mktemp)"
+for n in alpha beta gamma delta epsilon; do
+  printf 'src:%s\t%s\n' "$n" "$FIX/catalog_src/$n/SKILL.md" >> "$fmt_in"
+done
+bash "$SCRIPTS/format_catalog.sh" < "$fmt_in" | diff -u - "$FIX/catalog_expected.md" >/dev/null 2>&1
+check "format_catalog: fixtures -> expected table" 0 $?
+rm -f "$fmt_in"
+
+# --- lint_skill_bank_catalog.sh --------------------------------------------
+bash "$SCRIPTS/lint_skill_bank_catalog.sh" --file "$FIX/catalog_good.md" >/dev/null 2>&1
+check "catalog lint: well-formed -> pass" 0 $?
+
+bash "$SCRIPTS/lint_skill_bank_catalog.sh" --file "$FIX/catalog_bad.md" >/dev/null 2>&1
+check "catalog lint: malformed -> fail" 1 $?
+
+bash "$SCRIPTS/lint_skill_bank_catalog.sh" --file /nonexistent/catalog.md >/dev/null 2>&1
+check "catalog lint: missing file -> exit 2" 2 $?
+
+# every committed catalog must lint clean
+for cat in "$ROOT"/references/skill-bank/catalog/*.md; do
+  [ -e "$cat" ] || continue
+  bash "$SCRIPTS/lint_skill_bank_catalog.sh" --file "$cat" >/dev/null 2>&1
+  check "catalog lint: $(basename "$cat") is clean" 0 $?
+done
+
+echo "----"
+if [ "$fails" -eq 0 ]; then
+  echo "ALL TESTS PASSED"
+else
+  echo "$fails TEST(S) FAILED"
+  exit 1
+fi

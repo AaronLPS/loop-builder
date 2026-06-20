@@ -188,10 +188,20 @@ loop-builder/                  ← clone this into ~/.claude/skills/loop-builder
 │   ├── pattern-evaluator-optimizer.md
 │   ├── pattern-orchestrator-workers.md
 │   ├── pattern-ralph.md
-│   └── deploy-claude-managed-agents.md     optional deploy target (beta; behind uncertainty flag)
+│   ├── deploy-claude-managed-agents.md     optional deploy target (beta; behind uncertainty flag)
+│   └── skill-bank/                         catalog of borrowable external skills/plugins
+│       ├── recommended.md                  curated standouts (preferred by the search sub-agent)
+│       ├── catalog/                        comprehensive per-source listings (searched on demand)
+│       ├── search-agent.md                 prompt for the skill-bank search sub-agent
+│       └── sources.yml                     upstream sources + refresh/build procedure
 ├── scripts/
 │   ├── verifier_template.sh               generic predicate runner (exits non-zero on fail)
 │   ├── verify_no_p1_unassigned.sh         worked example (operates on gh-style JSON)
+│   ├── lint_skill_bank_recommended.sh     validates the curated recommended-list schema
+│   ├── refresh_skill_bank.sh              reports recommended-list drift vs upstream
+│   ├── format_catalog.sh                  SKILL.md frontmatter -> catalog rows
+│   ├── build_skill_bank_catalog.sh        generate per-source catalogs from upstream
+│   ├── lint_skill_bank_catalog.sh         validates catalog schema
 │   └── tests/                             red-green tests + fixtures
 ├── evals/evals.json           trigger tests (positive + negative) + per-eval expectations
 ├── docs/design-spec.md        how this skill itself was designed
@@ -259,10 +269,11 @@ The skill *designs and writes* the loop; you *run* it with Claude Code's native 
 > you on anything it's told to escalate rather than close. (Verify the exact
 > schedule/command syntax against current docs.)
 
-## Test the bundled verifiers
+## Test the bundled scripts
 
 ```bash
 bash scripts/tests/test_verifiers.sh
+bash scripts/tests/test_skill_bank.sh
 ```
 
 ---

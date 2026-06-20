@@ -1,0 +1,38 @@
+# skill-bank sources — the upstream collections this catalog draws from.
+#
+# Refresh is a manual two-step (see scripts/refresh_skill_bank.sh):
+#   1) Produce an upstream name list using each source's `list:` command below.
+#      Names use the convention <key>:<entry-slug> so they line up with recommended.md.
+#   2) Run: bash scripts/refresh_skill_bank.sh --upstream <that-file>
+#      and curate the reported diff into recommended.md (we list only standout entries,
+#      not a full mirror).
+
+- key: superpowers
+  repo: https://github.com/obra/superpowers
+  enumerate: skills
+  list: "gh api repos/obra/superpowers/contents/skills --jq '.[].name' | sed 's#^#superpowers:#'"
+
+- key: ecc
+  repo: https://github.com/affaan-m/ecc
+  enumerate: skills
+  list: "# README-curated — review the repo and add standout entries by hand"
+
+- key: awesome-claude-skills
+  repo: https://github.com/ComposioHQ/awesome-claude-skills
+  enumerate: "-"
+  list: "# README-curated — it is itself a list; pull the standout linked skills"
+  # Note: this is an aggregator list. An entry's recommended-list `source` may point at the
+  # linked skill's own repo (and carry that repo's license), while `synced` tracks
+  # this list repo. Drift detection therefore watches the list, not each linked repo.
+  # Catalog: not cleanly enumerable in v1 (default branch is `master`, and skills are
+  # nested under composio-skills/, not at root). Stays curated-only (recommended list).
+
+- key: gstack
+  repo: https://github.com/garrytan/gstack
+  enumerate: "-"
+  list: "# README-curated — review the repo and add standout entries by hand"
+
+- key: claude-for-legal
+  repo: https://github.com/anthropics/claude-for-legal
+  enumerate: "-"
+  list: "# README-curated — review the repo and add standout entries by hand"
