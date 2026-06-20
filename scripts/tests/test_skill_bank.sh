@@ -50,6 +50,15 @@ check "refresh: empty upstream -> all removed (non-zero)" 1 $?
 timeout 5 bash "$SCRIPTS/refresh_skill_bank.sh" --upstream >/dev/null 2>&1
 check "refresh: --upstream with no value -> exit 2 (no hang)" 2 $?
 
+# --- format_catalog.sh -----------------------------------------------------
+fmt_in="$(mktemp)"
+for n in alpha beta gamma delta; do
+  printf 'src:%s\t%s\n' "$n" "$FIX/catalog_src/$n/SKILL.md" >> "$fmt_in"
+done
+bash "$SCRIPTS/format_catalog.sh" < "$fmt_in" | diff -u - "$FIX/catalog_expected.md" >/dev/null 2>&1
+check "format_catalog: fixtures -> expected table" 0 $?
+rm -f "$fmt_in"
+
 echo "----"
 if [ "$fails" -eq 0 ]; then
   echo "ALL TESTS PASSED"
