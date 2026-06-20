@@ -13,7 +13,10 @@ extract_desc() {  # $1 = path to a SKILL.md ; echoes the raw description (may be
     infm && $0 ~ /^---[[:space:]]*$/  { exit }
     infm {
       if (indesc) {
-        if ($0 ~ /^[[:space:]]+/) { line=$0; sub(/^[[:space:]]+/,"",line); desc=desc " " line; next }
+        if ($0 ~ /^[[:space:]]+/ || $0 == "") {
+          if ($0 != "") { line=$0; sub(/^[[:space:]]+/,"",line); desc=desc " " line }
+          next
+        }
         else { indesc=0 }
       }
       if ($0 ~ /^description:[[:space:]]*/) {
@@ -22,7 +25,11 @@ extract_desc() {  # $1 = path to a SKILL.md ; echoes the raw description (may be
         desc=val; next
       }
     }
-    END { gsub(/^[\047"]+|[\047"]+$/,"",desc); print desc }
+    END {
+      if (desc ~ /^"/ && desc ~ /"$/)            { gsub(/^"|"$/, "", desc) }
+      else if (desc ~ /^\047/ && desc ~ /\047$/) { gsub(/^\047|\047$/, "", desc) }
+      print desc
+    }
   ' "$1"
 }
 
@@ -31,7 +38,7 @@ printf '|------|-------------|\n'
 while IFS=$'\t' read -r name path; do
   [ -z "$name" ] && continue
   d="$(extract_desc "$path")"
-  d="$(printf '%s' "$d" | tr '\n|' ' /' | tr -s ' ')"
+  d="$(printf '%s' "$d" | tr '\n|\t' ' / ' | tr -s ' ')"
   d="${d#"${d%%[![:space:]]*}"}"; d="${d%"${d##*[![:space:]]}"}"
   [ -z "$d" ] && d="(no description)"
   printf '| %s | %s |\n' "$name" "$d"

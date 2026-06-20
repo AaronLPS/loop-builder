@@ -52,7 +52,7 @@ check "refresh: --upstream with no value -> exit 2 (no hang)" 2 $?
 
 # --- format_catalog.sh -----------------------------------------------------
 fmt_in="$(mktemp)"
-for n in alpha beta gamma delta; do
+for n in alpha beta gamma delta epsilon; do
   printf 'src:%s\t%s\n' "$n" "$FIX/catalog_src/$n/SKILL.md" >> "$fmt_in"
 done
 bash "$SCRIPTS/format_catalog.sh" < "$fmt_in" | diff -u - "$FIX/catalog_expected.md" >/dev/null 2>&1
