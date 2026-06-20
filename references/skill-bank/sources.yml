@@ -19,11 +19,13 @@
 
 - key: awesome-claude-skills
   repo: https://github.com/ComposioHQ/awesome-claude-skills
-  enumerate: "."
+  enumerate: "-"
   list: "# README-curated — it is itself a list; pull the standout linked skills"
   # Note: this is an aggregator list. An entry's INDEX `source` may point at the
   # linked skill's own repo (and carry that repo's license), while `synced` tracks
   # this list repo. Drift detection therefore watches the list, not each linked repo.
+  # Tier-2: not cleanly enumerable in v1 (default branch is `master`, and skills are
+  # nested under composio-skills/, not at root). Stays Tier-1 curated-only.
 
 - key: gstack
   repo: https://github.com/garrytan/gstack
