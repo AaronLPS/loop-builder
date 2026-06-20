@@ -69,6 +69,13 @@ check "catalog lint: malformed -> fail" 1 $?
 bash "$SCRIPTS/lint_skill_bank_catalog.sh" --file /nonexistent/catalog.md >/dev/null 2>&1
 check "catalog lint: missing file -> exit 2" 2 $?
 
+# every committed Tier-2 catalog must lint clean
+for cat in "$ROOT"/references/skill-bank/catalog/*.md; do
+  [ -e "$cat" ] || continue
+  bash "$SCRIPTS/lint_skill_bank_catalog.sh" --file "$cat" >/dev/null 2>&1
+  check "catalog lint: $(basename "$cat") is clean" 0 $?
+done
+
 echo "----"
 if [ "$fails" -eq 0 ]; then
   echo "ALL TESTS PASSED"
