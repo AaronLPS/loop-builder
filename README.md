@@ -189,14 +189,18 @@ loop-builder/                  ← clone this into ~/.claude/skills/loop-builder
 │   ├── pattern-orchestrator-workers.md
 │   ├── pattern-ralph.md
 │   ├── deploy-claude-managed-agents.md     optional deploy target (beta; behind uncertainty flag)
-│   └── skill-bank/                         curated catalog of borrowable external skills/plugins
-│       ├── INDEX.md                        block-tagged entries (pointers only, never vendored)
-│       └── sources.yml                     upstream sources + refresh procedure
+│   └── skill-bank/                         catalog of borrowable external skills/plugins
+│       ├── INDEX.md                        Tier 1: curated block-tagged standouts (loaded every build)
+│       ├── catalog/                        Tier 2: full per-source listings (read on demand)
+│       └── sources.yml                     upstream sources + refresh/build procedure
 ├── scripts/
 │   ├── verifier_template.sh               generic predicate runner (exits non-zero on fail)
 │   ├── verify_no_p1_unassigned.sh         worked example (operates on gh-style JSON)
-│   ├── lint_skill_bank_index.sh           validates the skill-bank INDEX schema
-│   ├── refresh_skill_bank.sh              reports skill-bank drift vs upstream
+│   ├── lint_skill_bank_index.sh           validates the Tier-1 INDEX schema
+│   ├── refresh_skill_bank.sh              reports Tier-1 drift vs upstream
+│   ├── format_catalog.sh                  Tier-2: SKILL.md frontmatter -> catalog rows
+│   ├── build_skill_bank_catalog.sh        Tier-2: generate per-source catalogs from upstream
+│   ├── lint_skill_bank_catalog.sh         validates Tier-2 catalog schema
 │   └── tests/                             red-green tests + fixtures
 ├── evals/evals.json           trigger tests (positive + negative) + per-eval expectations
 ├── docs/design-spec.md        how this skill itself was designed
