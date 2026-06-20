@@ -1,14 +1,15 @@
-# skill-bank index
+# skill-bank — recommended (curated standouts)
 
 A curated catalog of proven external skills/plugins/workflows worth borrowing when
 building a loop. Pointers only — nothing here is vendored. Each entry is tagged by the
 loop block it can serve: (1) scheduling, (2) isolation, (3) skill/conventions,
 (4) connectors, (5) verifier, (6) state. Borrow by recommend-and-record: cite the
 source + install pointer + a named fallback; never inline external code. Sources and
-the refresh procedure live in `sources.yml`. This file is **Tier 1** — the curated
-standouts, loaded on every loop build. For comprehensive coverage, `catalog/<source>.md`
-holds the full per-source listing (auto-generated), read on demand when these standouts
-don't cover a block the loop needs.
+the refresh procedure live in `sources.yml`. This file is the **curated standouts** —
+the entries the skill-bank search sub-agent prefers. It is not loaded directly each
+build; in Phase 1.5 loop-builder dispatches a searcher (see
+`references/skill-bank/search-agent.md`) that reads this file plus the comprehensive
+`catalog/<source>.md` listings and returns the best-fit shortlist.
 
 | name | type | blocks | purpose | source | install | license | synced |
 |------|------|--------|---------|--------|---------|---------|--------|

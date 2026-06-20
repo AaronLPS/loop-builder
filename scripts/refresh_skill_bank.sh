@@ -7,13 +7,13 @@
 #   bash scripts/refresh_skill_bank.sh --upstream <file> [--index <file>]
 #
 # --upstream FILE : one entry per line, `name` or `name <ref>` (blank lines and
-#   #comments ignored), in the same <key>:<slug> convention as INDEX.md. A bare name
+#   #comments ignored), in the same <key>:<slug> convention as recommended.md. A bare name
 #   skips the stale check for that entry. This is the deterministic, tested path:
 #   produce FILE with the `list:` commands in references/skill-bank/sources.yml, then
 #   curate the reported diff by hand.
 set -u
 
-INDEX="references/skill-bank/INDEX.md"
+INDEX="references/skill-bank/recommended.md"
 UPSTREAM=""
 
 usage() { echo "usage: refresh_skill_bank.sh --upstream FILE [--index FILE]" >&2; exit 2; }

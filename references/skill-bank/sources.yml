@@ -2,9 +2,9 @@
 #
 # Refresh is a manual two-step (see scripts/refresh_skill_bank.sh):
 #   1) Produce an upstream name list using each source's `list:` command below.
-#      Names use the convention <key>:<entry-slug> so they line up with INDEX.md.
+#      Names use the convention <key>:<entry-slug> so they line up with recommended.md.
 #   2) Run: bash scripts/refresh_skill_bank.sh --upstream <that-file>
-#      and curate the reported diff into INDEX.md (we list only standout entries,
+#      and curate the reported diff into recommended.md (we list only standout entries,
 #      not a full mirror).
 
 - key: superpowers
@@ -21,11 +21,11 @@
   repo: https://github.com/ComposioHQ/awesome-claude-skills
   enumerate: "-"
   list: "# README-curated — it is itself a list; pull the standout linked skills"
-  # Note: this is an aggregator list. An entry's INDEX `source` may point at the
+  # Note: this is an aggregator list. An entry's recommended-list `source` may point at the
   # linked skill's own repo (and carry that repo's license), while `synced` tracks
   # this list repo. Drift detection therefore watches the list, not each linked repo.
-  # Tier-2: not cleanly enumerable in v1 (default branch is `master`, and skills are
-  # nested under composio-skills/, not at root). Stays Tier-1 curated-only.
+  # Catalog: not cleanly enumerable in v1 (default branch is `master`, and skills are
+  # nested under composio-skills/, not at root). Stays curated-only (recommended list).
 
 - key: gstack
   repo: https://github.com/garrytan/gstack

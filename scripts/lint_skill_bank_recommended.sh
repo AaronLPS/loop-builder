@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Lint the skill-bank INDEX table. Every data row must have all 8 columns, a known
+# Lint the skill-bank recommended list. Every data row must have all 8 columns, a known
 # type, block tags in 1..6, a single-token license, an http(s) source, and no empty
 # required cells. Exit 0 if clean, 1 if any violation, 2 on usage error. Run:
-#   bash scripts/lint_skill_bank_index.sh [--file references/skill-bank/INDEX.md]
+#   bash scripts/lint_skill_bank_recommended.sh [--file references/skill-bank/recommended.md]
 set -u
 
-FILE="references/skill-bank/INDEX.md"
+FILE="references/skill-bank/recommended.md"
 if [ "${1:-}" = "--file" ]; then FILE="${2:-}"; fi
 
 if [ ! -f "$FILE" ]; then
@@ -86,7 +86,7 @@ while IFS= read -r line; do
 done < "$FILE"
 
 if [ "$violations" -eq 0 ]; then
-  echo "OK: skill-bank index clean ($row entries)"
+  echo "OK: skill-bank recommended list clean ($row entries)"
   exit 0
 else
   echo "$violations violation(s)"
