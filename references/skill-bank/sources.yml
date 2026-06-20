@@ -9,14 +9,17 @@
 
 - key: superpowers
   repo: https://github.com/obra/superpowers
+  enumerate: skills
   list: "gh api repos/obra/superpowers/contents/skills --jq '.[].name' | sed 's#^#superpowers:#'"
 
 - key: ecc
   repo: https://github.com/affaan-m/ecc
+  enumerate: skills
   list: "# README-curated — review the repo and add standout entries by hand"
 
 - key: awesome-claude-skills
   repo: https://github.com/ComposioHQ/awesome-claude-skills
+  enumerate: "."
   list: "# README-curated — it is itself a list; pull the standout linked skills"
   # Note: this is an aggregator list. An entry's INDEX `source` may point at the
   # linked skill's own repo (and carry that repo's license), while `synced` tracks
@@ -24,8 +27,10 @@
 
 - key: gstack
   repo: https://github.com/garrytan/gstack
+  enumerate: "-"
   list: "# README-curated — review the repo and add standout entries by hand"
 
 - key: claude-for-legal
   repo: https://github.com/anthropics/claude-for-legal
+  enumerate: "-"
   list: "# README-curated — review the repo and add standout entries by hand"
