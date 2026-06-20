@@ -54,8 +54,9 @@ scaffolding before the seven answers exist — a loop with a missing block is th
 failure mode, not a shortcut.
 
 Create a TodoWrite item per phase so nothing is skipped — and a **distinct** item for
-the Phase 1.5 skill-bank search (`references/skill-bank/INDEX.md`), the step most
-easily missed because installed capabilities are already in view and the bank is not.
+the Phase 1.5 skill-bank search (dispatch the searcher over `references/skill-bank/`),
+the step most easily missed because installed capabilities are already in view and the
+bank is not.
 
 ---
 
@@ -104,29 +105,31 @@ time, in order, and map both to the loop's blocks.** Neither is optional.
 **1.5a — Installed.** Use `find-skills` (or scan the available skills / MCP list) for
 capabilities already on the machine (ready to use immediately).
 
-**1.5b — skill-bank — do not skip, even if 1.5a already seems to cover a block.** The
-bank has two tiers; use them in order:
+**1.5b — skill-bank — do not skip, even if 1.5a already seems to cover a block.**
+**Search the bank** for capabilities matching the blocks this loop needs. The bank is
+large, so don't read it inline — dispatch a search sub-agent:
 
-*Tier 1 (always).* **Read `references/skill-bank/INDEX.md`** — a curated, block-tagged
-catalog of standout external skills/plugins/workflows — and scan it for the blocks
-this loop needs.
+Dispatch a general-purpose sub-agent using the prompt in
+`references/skill-bank/search-agent.md`, passing the loop's block needs (e.g. "verifier
+for X; connector for Y"). It reads the whole bank — `references/skill-bank/recommended.md`
+(curated standouts) and `references/skill-bank/catalog/*.md` (the comprehensive
+listings) — in its own context, judges relevance semantically, and returns a short
+shortlist per need: the best-fit entries (name, source, block, one-line why, and whether
+it's a recommended standout), or "none applicable — <reason>". It prefers standouts when
+they fit and only reaches into the catalogs when they don't.
 
-*Tier 2 (when Tier 1 falls short).* For any block the loop needs that the Tier-1
-standouts don't cover well, **read the relevant `references/skill-bank/catalog/<source>.md`**
-— the full per-source listing (name + one-line description) — and judge candidates by
-their description. Widen only the *uncovered* block(s), and only the source(s)
-plausibly holding them — not every catalog. Record "skill-bank: none applicable —
-<reason>" only *after* this widening, never before.
+*Fallback (if sub-agents aren't available):* read `references/skill-bank/recommended.md`
+directly, and scan a specific `catalog/<source>.md` for any block the standouts don't
+cover — same discipline.
 
-Borrow semantics are unchanged: recommend-and-record only (surface source + install
-pointer + a named fallback; never inline external code), and confirm license and
-mechanics against source at borrow time. The point is to surface proven prior art
-before you settle, so you compose instead of rebuild — an installed capability
-covering a block is exactly when people skip this and miss a better-fitting borrow.
+Borrow from the shortlist: recommend-and-record only (surface source + install pointer +
+a named fallback; never inline external code), confirming license and mechanics against
+source at borrow time. The point is to surface proven prior art before you settle, so
+you compose instead of rebuild.
 
-Map what you find — from **both** the installed set (1.5a) and the skill-bank INDEX
-(1.5b) — to the blocks the loop needs; recommend only what **genuinely changes the
-design**, not an exhaustive inventory:
+Map what you find — from **both** the installed set (1.5a) and the skill-bank search
+results (1.5b) — to the blocks the loop needs; recommend only what **genuinely changes
+the design**, not an exhaustive inventory:
 
 - **Verifier (⑤)** — is there an installed skill or program that can *be* the
   deterministic check or the evaluator? (e.g. `codex` can act as an independent,
@@ -191,7 +194,7 @@ DISCOVERY (find work):  ____   (connector: ____)
 ACTION (do work):       ____   (tools: ____ ; isolation: worktree? y/n)
 VERIFY (separate check): ____  (deterministic? y/n)
 REUSE (installed):      ____  (skill/MCP → block it serves ; fallback: ____)
-REUSE (skill-bank):     ____  (INDEX entry → block ; install + fallback ; or "none applicable — why")
+REUSE (skill-bank):     ____  (bank result → block ; install + fallback ; or "none applicable — why")
 STATE (persist outside): ____  (file | board | issues)
 HUMAN GATES:            ____   (irreversible actions list)
 KNOWLEDGE → skill:      ____   (conventions the loop should not re-derive)
@@ -290,7 +293,7 @@ VERIFY (separate check): re-query, assert no P1 lacks assignee  (deterministic? 
                          scripts/verify_no_p1_unassigned.sh)
 REUSE (installed):      GitHub MCP → connector (④); fallback: gh CLI
 REUSE (skill-bank):     none applicable — verifier is a bundled deterministic script
-                         (checked INDEX block 5; nothing fits better)
+                         (searched the bank; nothing fits better)
 STATE (persist outside): loops/triage/STATE.md — issues triaged this week
 HUMAN GATES:            none auto-closes; escalate (don't close) anything ambiguous
 KNOWLEDGE → skill:      label taxonomy, what a "plan comment" must contain
@@ -317,7 +320,7 @@ VERIFY (separate check): a SEPARATE evaluator sub-agent grades each draft agains
 REUSE (installed):      Gmail MCP → connector (④); codex as a different-model
                         evaluator (⑤); fallback: a general-purpose sub-agent
 REUSE (skill-bank):     none applicable — evaluator is the installed different-model
-                        sub-agent (checked INDEX block 5)
+                        sub-agent (searched the bank)
 STATE (persist outside): loops/inbox/STATE.md — threads drafted / skipped + reasons
 HUMAN GATES:            SENDING is a hard gate — the loop only drafts; you press send
 KNOWLEDGE → skill:      voice/tone guide, what never to commit to in writing,
@@ -348,7 +351,7 @@ VERIFY (separate check): re-run build/tests on the fix branch; green = pass
                         (deterministic? y — the build itself is the verifier)
 REUSE (installed):      GitHub MCP → connector (④); the build command is the
                         verifier; fallback: gh CLI
-REUSE (skill-bank):     gstack:investigate (⑤) surfaced from INDEX for root-causing
+REUSE (skill-bank):     gstack:investigate (⑤) surfaced by the bank search for root-causing
                         failures; install: clone into ~/.claude/skills/; fallback:
                         inline debugging; verify mechanics against source
 STATE (persist outside): loops/ci-watch/STATE.md — failures seen, fix PRs, status
@@ -370,7 +373,7 @@ Before declaring the loop scaffolded, confirm:
 
 - [ ] All seven decisions answered; goal is a checkable predicate.
 - [ ] **Installed** capabilities surveyed (1.5a — find-skills / MCP list).
-- [ ] **skill-bank consulted** (1.5b): Tier-1 `INDEX.md` scanned; for any block its standouts don't cover, the relevant Tier-2 `catalog/<source>.md` was read. "none applicable — <reason>" recorded only after that widening. Not skippable.
+- [ ] **skill-bank searched** (1.5b): the search sub-agent (or the direct-read fallback) was run over `recommended.md` + `catalog/*.md`; relevant entries surfaced, or "none applicable — <reason>" recorded. Not skippable.
 - [ ] Anything wired in (installed or bank) has a named fallback.
 - [ ] One pattern chosen; only its reference was loaded.
 - [ ] Populated template shown to the user.
