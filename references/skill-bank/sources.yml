@@ -19,20 +19,23 @@
 
 - key: awesome-claude-skills
   repo: https://github.com/ComposioHQ/awesome-claude-skills
-  enumerate: "-"
+  enumerate: "."
+  ref: master
   list: "# README-curated — it is itself a list; pull the standout linked skills"
   # Note: this is an aggregator list. An entry's recommended-list `source` may point at the
   # linked skill's own repo (and carry that repo's license), while `synced` tracks
   # this list repo. Drift detection therefore watches the list, not each linked repo.
-  # Catalog: not cleanly enumerable in v1 (default branch is `master`, and skills are
-  # nested under composio-skills/, not at root). Stays curated-only (recommended list).
+  # Catalog: enumerates the repo root on master (~25 distinct skills). The 833
+  # auto-generated composio-skills/*-automation wrappers are intentionally excluded.
 
 - key: gstack
   repo: https://github.com/garrytan/gstack
-  enumerate: "-"
+  enumerate: "."
+  ref: main
   list: "# README-curated — review the repo and add standout entries by hand"
 
 - key: claude-for-legal
   repo: https://github.com/anthropics/claude-for-legal
-  enumerate: "-"
+  enumerate: "ai-governance-legal/skills commercial-legal/skills corporate-legal/skills employment-legal/skills ip-legal/skills litigation-legal/skills privacy-legal/skills product-legal/skills regulatory-legal/skills"
+  ref: main
   list: "# README-curated — review the repo and add standout entries by hand"
