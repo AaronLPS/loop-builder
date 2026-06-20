@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lint a Tier-2 catalog file: every data row must have exactly 2 columns, a name in
+# Lint a skill-bank catalog file: every data row must have exactly 2 columns, a name in
 # <key>:<slug> form (contains a colon), and a non-empty description. Exit 0 clean,
 # 1 violations, 2 usage error. Run:
 #   bash scripts/lint_skill_bank_catalog.sh --file references/skill-bank/catalog/<key>.md

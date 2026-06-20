@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pure formatter for Tier-2 catalogs. Reads "name<TAB>path-to-SKILL.md" lines on
+# Pure formatter for skill-bank catalogs. Reads "name<TAB>path-to-SKILL.md" lines on
 # stdin and writes a markdown table to stdout: a header row, a separator, then one
 # row per entry "| name | one-line description |". The description is read from the
 # SKILL.md YAML frontmatter `description:` field, collapsed to a single line; any '|'

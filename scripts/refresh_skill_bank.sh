@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Compare the skill-bank INDEX against a list of upstream entries and report drift in
-# three classes: added (upstream-only), removed (index-only), stale (same name, but
-# the upstream ref differs from the index's recorded synced ref). Exit 0 if in sync,
+# Compare the skill-bank recommended list against a list of upstream entries and report
+# drift in three classes: added (upstream-only), removed (recommended-only), stale (same
+# name, but the upstream ref differs from the recorded synced ref). Exit 0 if in sync,
 # 1 if any drift, 2 on usage error.
 #
 #   bash scripts/refresh_skill_bank.sh --upstream <file> [--index <file>]
@@ -26,7 +26,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-if [ ! -f "$INDEX" ]; then echo "refresh: index not found: $INDEX" >&2; exit 2; fi
+if [ ! -f "$INDEX" ]; then echo "refresh: recommended list not found: $INDEX" >&2; exit 2; fi
 if [ -z "$UPSTREAM" ]; then
   echo "refresh: --upstream FILE is required (see references/skill-bank/sources.yml)" >&2
   exit 2
@@ -88,12 +88,12 @@ stale="$(awk '
 
 drift=0
 if [ -n "$added" ]; then
-  echo "UPSTREAM-ADDED (in upstream, not in index):"
+  echo "UPSTREAM-ADDED (in upstream, not in recommended list):"
   printf '%s\n' "$added" | sed 's/^/  + /'
   drift=1
 fi
 if [ -n "$removed" ]; then
-  echo "INDEX-ONLY (in index, not upstream -- removed/renamed?):"
+  echo "RECOMMENDED-ONLY (in recommended list, not upstream -- removed/renamed?):"
   printf '%s\n' "$removed" | sed 's/^/  - /'
   drift=1
 fi

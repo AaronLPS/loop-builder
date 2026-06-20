@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tests for skill-bank tooling: the INDEX linter and the refresh drift checker.
+# Tests for skill-bank tooling: the recommended-list linter, the catalog tooling, and the refresh drift checker.
 # Same red-green contract as test_verifiers.sh (exit 0 == clean / in-sync).
 # Run: bash scripts/tests/test_skill_bank.sh
 set -u
@@ -69,7 +69,7 @@ check "catalog lint: malformed -> fail" 1 $?
 bash "$SCRIPTS/lint_skill_bank_catalog.sh" --file /nonexistent/catalog.md >/dev/null 2>&1
 check "catalog lint: missing file -> exit 2" 2 $?
 
-# every committed Tier-2 catalog must lint clean
+# every committed catalog must lint clean
 for cat in "$ROOT"/references/skill-bank/catalog/*.md; do
   [ -e "$cat" ] || continue
   bash "$SCRIPTS/lint_skill_bank_catalog.sh" --file "$cat" >/dev/null 2>&1

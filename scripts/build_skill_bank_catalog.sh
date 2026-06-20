@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Generate Tier-2 catalogs from upstream. For each sources.yml entry whose
+# Generate skill-bank catalogs from upstream. For each sources.yml entry whose
 # `enumerate:` is not '-', list its skill subdirectories, fetch each SKILL.md, and
 # write references/skill-bank/catalog/<key>.md (header + table). The table body is
 # produced by scripts/format_catalog.sh (unit-tested); this script is the network
