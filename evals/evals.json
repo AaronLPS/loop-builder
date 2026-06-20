@@ -85,6 +85,20 @@
         "External code is recommended/referenced, never inlined into the scaffolded loop",
         "The recommendation carries the 'verify unverified mechanics against source' caution"
       ]
+    },
+    {
+      "id": 7,
+      "prompt": "I need a weekly agent that proofreads our changelog entries for tone and house style before release — and I'd like to reuse a proven writing/editing skill rather than invent a style checker, even a fairly niche one",
+      "expected_output": "Triggers loop-builder; in Phase 1.5 it scans Tier-1 INDEX, finds no standout covering the 'style/editing verifier' block, and ESCALATES to read a relevant Tier-2 references/skill-bank/catalog/<source>.md, surfacing a candidate by its description (or recording 'none applicable' only after that widening). Recommends, never inlines.",
+      "files": [],
+      "expectations": [
+        "The loop-builder skill is invoked",
+        "Phase 1.5 first scans the Tier-1 INDEX (references/skill-bank/INDEX.md)",
+        "Because the Tier-1 standouts do not cover the needed block, it reads a Tier-2 catalog file (references/skill-bank/catalog/<source>.md)",
+        "It widens only the uncovered block and only plausibly-relevant source(s), not every catalog",
+        "A candidate is surfaced from the Tier-2 listing by its description, OR 'skill-bank: none applicable — <reason>' is recorded only after the Tier-2 read",
+        "Borrow stays recommend-and-record with a named fallback; external code is never inlined"
+      ]
     }
   ]
 }
