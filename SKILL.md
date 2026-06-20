@@ -53,7 +53,9 @@ Work in three phases, in order: **elicit → select → scaffold.** Do not jump 
 scaffolding before the seven answers exist — a loop with a missing block is the
 failure mode, not a shortcut.
 
-Create a TodoWrite item per phase so nothing is skipped.
+Create a TodoWrite item per phase so nothing is skipped — and a **distinct** item for
+the Phase 1.5 skill-bank search (`references/skill-bank/INDEX.md`), the step most
+easily missed because installed capabilities are already in view and the bank is not.
 
 ---
 
@@ -94,23 +96,28 @@ crisp, checkable goal.
 
 ## Phase 1.5 — Survey reusable capabilities (don't rebuild what exists)
 
-Before choosing a pattern, check what's **already installed** that can *serve a
-block* instead of being built from scratch. This is the doc's "compose blocks; don't
-reach for a framework you can't debug" principle applied to the build itself — the
-loop shouldn't re-derive a capability that already exists as a skill, connector, or
-sub-agent. Search **two** sources and map both to the loop's blocks:
+Before choosing a pattern, survey what already exists that can *serve a block* instead
+of being built from scratch — the "compose blocks; don't reach for a framework you
+can't debug" principle applied to the build itself. **Search both sources below every
+time, in order, and map both to the loop's blocks.** Neither is optional.
 
-- **Installed** — use `find-skills` (or scan the available skills / MCP list) for
-  capabilities already on the machine (ready to use immediately).
-- **skill-bank** — search `references/skill-bank/INDEX.md`, a curated catalog of
-  proven external skills/plugins/workflows tagged by the block each can serve, for
-  capabilities worth *borrowing* (these would need installing). Recommend-and-record
-  only: surface the source + install pointer + a named fallback; never inline
-  external code. Bank entries are externally evolving — keep the "verify unverified
-  mechanics" flag on them.
+**1.5a — Installed.** Use `find-skills` (or scan the available skills / MCP list) for
+capabilities already on the machine (ready to use immediately).
 
-Map what you find to the blocks the loop needs — recommend only what **genuinely
-changes the design**, not an exhaustive inventory:
+**1.5b — skill-bank — do not skip, even if 1.5a already seems to cover a block.**
+**Read `references/skill-bank/INDEX.md`** (a curated catalog of proven external
+skills/plugins/workflows, each tagged by the block it serves) and scan it for the
+blocks this loop needs. The whole point is to surface proven prior art *before you
+settle*, so you compose instead of rebuild — an installed capability covering a block
+is exactly when people skip this and miss a better-fitting borrow. Recommend-and-record
+only: surface the source + install pointer + a named fallback; never inline external
+code. Bank entries are externally evolving — keep the "verify unverified mechanics"
+flag on them. If nothing in the bank fits, record that explicitly ("skill-bank: none
+applicable — <reason>") rather than silently skipping the read.
+
+Map what you find — from **both** the installed set (1.5a) and the skill-bank INDEX
+(1.5b) — to the blocks the loop needs; recommend only what **genuinely changes the
+design**, not an exhaustive inventory:
 
 - **Verifier (⑤)** — is there an installed skill or program that can *be* the
   deterministic check or the evaluator? (e.g. `codex` can act as an independent,
@@ -174,7 +181,8 @@ TRIGGER:                schedule | event | run-until-done → ____
 DISCOVERY (find work):  ____   (connector: ____)
 ACTION (do work):       ____   (tools: ____ ; isolation: worktree? y/n)
 VERIFY (separate check): ____  (deterministic? y/n)
-REUSE (existing skills): ____  (skill/MCP → block it serves ; fallback: ____)
+REUSE (installed):      ____  (skill/MCP → block it serves ; fallback: ____)
+REUSE (skill-bank):     ____  (INDEX entry → block ; install + fallback ; or "none applicable — why")
 STATE (persist outside): ____  (file | board | issues)
 HUMAN GATES:            ____   (irreversible actions list)
 KNOWLEDGE → skill:      ____   (conventions the loop should not re-derive)
@@ -271,8 +279,9 @@ DISCOVERY (find work):  list open P1 issues   (connector: GitHub MCP / gh)
 ACTION (do work):       assign an owner, post an initial plan comment (tools: gh)
 VERIFY (separate check): re-query, assert no P1 lacks assignee  (deterministic? y →
                          scripts/verify_no_p1_unassigned.sh)
-REUSE (existing skills): GitHub MCP → connector (④); verifier is a bundled script,
-                         no external skill needed; fallback: gh CLI
+REUSE (installed):      GitHub MCP → connector (④); fallback: gh CLI
+REUSE (skill-bank):     none applicable — verifier is a bundled deterministic script
+                         (checked INDEX block 5; nothing fits better)
 STATE (persist outside): loops/triage/STATE.md — issues triaged this week
 HUMAN GATES:            none auto-closes; escalate (don't close) anything ambiguous
 KNOWLEDGE → skill:      label taxonomy, what a "plan comment" must contain
@@ -296,8 +305,10 @@ ACTION (do work):       write a reply into the drafts folder per thread
 VERIFY (separate check): a SEPARATE evaluator sub-agent grades each draft against a
                         rubric (answers the question, right tone, no overcommitment)
                         — judgement, not a script (deterministic? n)
-REUSE (existing skills): Gmail MCP → connector (④); codex as a different-model
+REUSE (installed):      Gmail MCP → connector (④); codex as a different-model
                         evaluator (⑤); fallback: a general-purpose sub-agent
+REUSE (skill-bank):     none applicable — evaluator is the installed different-model
+                        sub-agent (checked INDEX block 5)
 STATE (persist outside): loops/inbox/STATE.md — threads drafted / skipped + reasons
 HUMAN GATES:            SENDING is a hard gate — the loop only drafts; you press send
 KNOWLEDGE → skill:      voice/tone guide, what never to commit to in writing,
@@ -326,8 +337,11 @@ ACTION (do work):       reproduce, write a fix, open a PR
                         (tools: gh ; isolation: worktree? y — parallel file work)
 VERIFY (separate check): re-run build/tests on the fix branch; green = pass
                         (deterministic? y — the build itself is the verifier)
-REUSE (existing skills): GitHub MCP → connector (④); the build command is the
-                        verifier, no external skill; fallback: gh CLI
+REUSE (installed):      GitHub MCP → connector (④); the build command is the
+                        verifier; fallback: gh CLI
+REUSE (skill-bank):     gstack:investigate (⑤) surfaced from INDEX for root-causing
+                        failures; install: clone into ~/.claude/skills/; fallback:
+                        inline debugging; verify mechanics against source
 STATE (persist outside): loops/ci-watch/STATE.md — failures seen, fix PRs, status
 HUMAN GATES:            opening a PR is fine; MERGING is a hard gate — a human reviews
 KNOWLEDGE → skill:      how to run the build locally, where flaky tests live,
@@ -346,7 +360,9 @@ choices.
 Before declaring the loop scaffolded, confirm:
 
 - [ ] All seven decisions answered; goal is a checkable predicate.
-- [ ] Reusable capabilities surveyed; anything wired in has a named fallback.
+- [ ] **Installed** capabilities surveyed (1.5a — find-skills / MCP list).
+- [ ] **skill-bank INDEX consulted** (1.5b — `references/skill-bank/INDEX.md`): relevant entries shortlisted, or "none applicable — <reason>" recorded. Not skippable.
+- [ ] Anything wired in (installed or bank) has a named fallback.
 - [ ] One pattern chosen; only its reference was loaded.
 - [ ] Populated template shown to the user.
 - [ ] Six blocks scaffolded as files in the loop folder.
