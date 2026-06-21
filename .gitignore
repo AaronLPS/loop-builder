@@ -21,3 +21,6 @@ feedback.json
 # Loop *state* is changing data, never durable knowledge — never commit a loop's
 # runtime state into version control. (Kept out of this repo by design.)
 loops/*/runs/
+
+# Understand Anything — generated knowledge graph + analysis scratch (regenerable)
+.understand-anything/
