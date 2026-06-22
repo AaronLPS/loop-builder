@@ -355,22 +355,25 @@ class DedupeTest(unittest.TestCase):
     def test_no_match_below_threshold(self):
         self.assertEqual(dedupe.match("billing dashboard colors", ISSUES), [])
 
-    def test_fetch_uses_gh_then_falls_back_then_empty(self):
-        calls = []
-
+    def test_fetch_uses_gh_when_available(self):
         def runner(cmd):
-            calls.append(cmd[0])
-            if cmd[0] == "gh":
-                raise RuntimeError("gh not installed")
-            return json.dumps([{"number": 9, "title": "x", "pull_request": None}])
+            self.assertEqual(cmd[0], "gh")
+            return json.dumps([{"number": 5, "title": "from gh"}])
 
-        # curl path returns REST shape; pull_request key absent means issue.
-        def runner_ok(cmd):
+        out = dedupe.fetch_open_issues("AaronLPS/loop-builder", runner=runner)
+        self.assertEqual(out, [{"number": 5, "title": "from gh"}])
+
+    def test_fetch_falls_back_to_curl_and_drops_prs(self):
+        def runner(cmd):
             if cmd[0] == "gh":
                 raise RuntimeError("no gh")
-            return json.dumps([{"number": 9, "title": "real issue"}])
+            # REST shape; entries carrying a pull_request key are PRs, not issues
+            return json.dumps([
+                {"number": 9, "title": "real issue"},
+                {"number": 10, "title": "a PR", "pull_request": {"url": "x"}},
+            ])
 
-        out = dedupe.fetch_open_issues("AaronLPS/loop-builder", runner=runner_ok)
+        out = dedupe.fetch_open_issues("AaronLPS/loop-builder", runner=runner)
         self.assertEqual(out, [{"number": 9, "title": "real issue"}])
 
     def test_fetch_returns_empty_on_total_failure(self):
@@ -455,7 +458,7 @@ def fetch_open_issues(repo: str,
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `python3 scripts/tests/feedback/test_dedupe.py -v`
-Expected: PASS (4 tests)
+Expected: PASS (5 tests)
 
 - [ ] **Step 5: Commit**
 
