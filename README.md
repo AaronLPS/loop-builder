@@ -283,6 +283,34 @@ bash scripts/tests/test_skill_bank.sh
 
 ---
 
+## Contributing
+
+### Secret & PII scanning (pre-commit)
+
+This is a public repo, so a [`gitleaks`](https://github.com/gitleaks/gitleaks)
+pre-commit hook guards against committing secrets, API keys, machine-local home
+paths, or personal contact details. **Install it once per clone:**
+
+```bash
+pip install pre-commit        # or: pipx install pre-commit
+pre-commit install            # wires the hook into .git/hooks/pre-commit
+```
+
+After that, every `git commit` scans the staged changes and blocks anything that
+trips a rule. The ruleset is `gitleaks`' defaults plus project-specific PII
+patterns in [`.gitleaks.toml`](.gitleaks.toml).
+
+| Layer | Where | Role |
+| --- | --- | --- |
+| Local hook | `.pre-commit-config.yaml` | scans staged changes before they enter history |
+| CI backstop | `.github/workflows/secret-scan.yml` | re-scans pushed history, catching any `--no-verify` bypass |
+
+A false positive can be allowlisted with a trailing `# gitleaks:allow` comment
+on the line, or via the `[allowlist]` block in `.gitleaks.toml`. Bump the pinned
+hook version with `pre-commit autoupdate`.
+
+---
+
 ## References & sources
 
 The concepts here are not invented; they come from the loop-engineering literature, captured and graded in [`references/loops-and-loop-engineering.md`](references/loops-and-loop-engineering.md), which is the skill's knowledge backbone. Key sources:
