@@ -11,8 +11,22 @@
 # Update all hook versions with: pre-commit autoupdate
 
 repos:
+  # Secret scanning (API keys, tokens, private keys).
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.1
     hooks:
       - id: gitleaks
-        name: Detect secrets and PII (gitleaks)
+        name: Detect secrets (gitleaks)
+
+  # PII lint that gitleaks won't do: block machine-local absolute home paths
+  # (e.g. /home/<user>/..., /Users/<user>/...) that leak a username / machine
+  # layout. pygrep fails the commit if the pattern is found in staged files.
+  - repo: local
+    hooks:
+      - id: no-local-home-paths
+        name: Block machine-local absolute home paths
+        language: pygrep
+        entry: '/(?:home|Users)/[A-Za-z0-9._-]+/'
+        types: [text]
+        # The hook's own pattern definitions necessarily contain the pattern.
+        exclude: '^(\.pre-commit-config\.yaml|\.github/workflows/secret-scan\.yml|README\.md)$'

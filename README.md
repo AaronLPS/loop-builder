@@ -287,27 +287,30 @@ bash scripts/tests/test_skill_bank.sh
 
 ### Secret & PII scanning (pre-commit)
 
-This is a public repo, so a [`gitleaks`](https://github.com/gitleaks/gitleaks)
-pre-commit hook guards against committing secrets, API keys, machine-local home
-paths, or personal contact details. **Install it once per clone:**
+This is a public repo, so [`pre-commit`](https://pre-commit.com/) hooks guard
+against committing things that shouldn't be public. **Install once per clone:**
 
 ```bash
 pip install pre-commit        # or: pipx install pre-commit
-pre-commit install            # wires the hook into .git/hooks/pre-commit
+pre-commit install            # wires the hooks into .git/hooks/pre-commit
 ```
 
-After that, every `git commit` scans the staged changes and blocks anything that
-trips a rule. The ruleset is `gitleaks`' defaults plus project-specific PII
-patterns in [`.gitleaks.toml`](.gitleaks.toml).
+After that, every `git commit` scans the staged changes and blocks:
 
-| Layer | Where | Role |
+| Check | Tool | Catches |
 | --- | --- | --- |
-| Local hook | `.pre-commit-config.yaml` | scans staged changes before they enter history |
-| CI backstop | `.github/workflows/secret-scan.yml` | re-scans pushed history, catching any `--no-verify` bypass |
+| Secrets | [`gitleaks`](https://github.com/gitleaks/gitleaks) (`.gitleaks.toml`) | API keys, tokens, private keys |
+| Local paths | `pygrep` hook | machine-local absolute home paths (`/home/<user>/...`) that leak a username |
 
-A false positive can be allowlisted with a trailing `# gitleaks:allow` comment
-on the line, or via the `[allowlist]` block in `.gitleaks.toml`. Bump the pinned
-hook version with `pre-commit autoupdate`.
+Both checks also run server-side in
+[`.github/workflows/secret-scan.yml`](.github/workflows/secret-scan.yml) on
+every push/PR, so a `--no-verify` bypass still gets caught.
+
+The config carries no personal data of its own; personal-email leakage is
+handled by GitHub's email-privacy + push-protection settings. Allowlist a
+gitleaks false positive with a trailing `# gitleaks:allow` comment or the
+`[allowlist]` block in `.gitleaks.toml`; bump pinned hook versions with
+`pre-commit autoupdate`.
 
 ---
 

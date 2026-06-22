@@ -1,43 +1,24 @@
 # gitleaks config for loop-builder (public repo).
-# Layers on top of gitleaks' built-in secret rules with project-specific PII
-# rules, since the defaults catch API keys/tokens but not machine-local paths
-# or a maintainer's personal contact details.
+#
+# Scope: SECRETS only (API keys, tokens, private keys) via gitleaks' built-in
+# ruleset. gitleaks deliberately allowlists machine-local paths like /home/...
+# and $HOME, so the "no local home paths" lint lives in a dedicated pygrep
+# hook in .pre-commit-config.yaml instead — the right tool for that job.
+#
+# This file is public and intentionally contains NO literal personal data.
 #
 # Scan locally:   gitleaks git --config .gitleaks.toml
 # Scan staged:    handled automatically by the pre-commit hook
-# Allowlist a false positive: add a regex/path below, or annotate the line with
-#   a trailing  # gitleaks:allow  comment.
+# Allowlist a false positive: add a path/regex below, or annotate the line
+#   with a trailing  # gitleaks:allow  comment.
 
 title = "loop-builder gitleaks config"
 
 [extend]
-# Inherit gitleaks' full default ruleset (AWS keys, GitHub tokens, private
-# keys, etc.). Custom rules below are additive.
 useDefault = true
 
-[[rules]]
-id = "maintainer-personal-email"
-description = "Maintainer's personal email addresses (PII)"
-regex = '''(?:slpmyart@gmail|shi\.liping@hotmail)\.com'''
-tags = ["pii", "email"]
-
-[[rules]]
-id = "local-home-path-linux"
-description = "Machine-local Linux home directory path leaks the username"
-regex = '''/home/liping(?:/|\b)'''
-tags = ["pii", "path"]
-
-[[rules]]
-id = "local-home-path-macos"
-description = "Machine-local macOS home directory path leaks the username"
-regex = '''/Users/liping(?:/|\b)'''
-tags = ["pii", "path"]
-
 [allowlist]
-description = "Paths that never contain real secrets / are scan scaffolding"
+description = "Regenerable scratch that never holds real secrets"
 paths = [
-  # gitleaks' own config necessarily contains the patterns it matches on.
-  '''\.gitleaks\.toml''',
-  # Regenerable analysis scratch; already git-ignored but belt-and-suspenders.
   '''\.understand-anything/''',
 ]
