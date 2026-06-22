@@ -1,0 +1,21 @@
+name: Bug report
+description: Something in loop-builder or a loop it generated misbehaved
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What broke, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps / context
+      description: How to reproduce, plus relevant context. Please remove any private paths or secrets.
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: Claude Code version, OS, loop-builder version if known.
