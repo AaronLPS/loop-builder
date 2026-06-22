@@ -44,7 +44,7 @@
 # scripts/tests/feedback/test_feedback_log.py
 import os, sys, pathlib, tempfile, unittest
 
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "scripts" / "feedback"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "scripts" / "feedback"))
 import feedback_log  # noqa: E402
 
 
@@ -205,7 +205,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 # scripts/tests/feedback/test_sanitize.py
 import sys, pathlib, unittest
 
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "scripts" / "feedback"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "scripts" / "feedback"))
 import sanitize  # noqa: E402
 
 
@@ -336,7 +336,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 # scripts/tests/feedback/test_dedupe.py
 import sys, pathlib, json, unittest
 
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "scripts" / "feedback"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "scripts" / "feedback"))
 import dedupe  # noqa: E402
 
 ISSUES = [
@@ -491,7 +491,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 # scripts/tests/feedback/test_file_issue.py
 import sys, pathlib, urllib.parse, unittest
 
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "scripts" / "feedback"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "scripts" / "feedback"))
 import file_issue  # noqa: E402
 
 REPO = "AaronLPS/loop-builder"
@@ -669,7 +669,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 # scripts/tests/feedback/test_cli.py
 import os, sys, io, json, pathlib, tempfile, contextlib, unittest
 
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "scripts" / "feedback"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "scripts" / "feedback"))
 import cli  # noqa: E402
 
 
