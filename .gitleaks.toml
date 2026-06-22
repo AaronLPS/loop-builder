@@ -1,0 +1,43 @@
+# gitleaks config for loop-builder (public repo).
+# Layers on top of gitleaks' built-in secret rules with project-specific PII
+# rules, since the defaults catch API keys/tokens but not machine-local paths
+# or a maintainer's personal contact details.
+#
+# Scan locally:   gitleaks git --config .gitleaks.toml
+# Scan staged:    handled automatically by the pre-commit hook
+# Allowlist a false positive: add a regex/path below, or annotate the line with
+#   a trailing  # gitleaks:allow  comment.
+
+title = "loop-builder gitleaks config"
+
+[extend]
+# Inherit gitleaks' full default ruleset (AWS keys, GitHub tokens, private
+# keys, etc.). Custom rules below are additive.
+useDefault = true
+
+[[rules]]
+id = "maintainer-personal-email"
+description = "Maintainer's personal email addresses (PII)"
+regex = '''(?:REDACTED-EMAIL|REDACTED-EMAIL)\.com'''
+tags = ["pii", "email"]
+
+[[rules]]
+id = "local-home-path-linux"
+description = "Machine-local Linux home directory path leaks the username"
+regex = '''/home/REDACTED(?:/|\b)'''
+tags = ["pii", "path"]
+
+[[rules]]
+id = "local-home-path-macos"
+description = "Machine-local macOS home directory path leaks the username"
+regex = '''/Users/REDACTED(?:/|\b)'''
+tags = ["pii", "path"]
+
+[allowlist]
+description = "Paths that never contain real secrets / are scan scaffolding"
+paths = [
+  # gitleaks' own config necessarily contains the patterns it matches on.
+  '''\.gitleaks\.toml''',
+  # Regenerable analysis scratch; already git-ignored but belt-and-suspenders.
+  '''\.understand-anything/''',
+]

@@ -1,0 +1,18 @@
+# Local pre-commit gate. Install once per clone:
+#
+#   pip install pre-commit        # or: pipx install pre-commit
+#   pre-commit install            # wire it into .git/hooks/pre-commit
+#
+# Thereafter every `git commit` scans the staged changes before they enter
+# history. Bypass (discouraged) with `git commit --no-verify` — the CI job in
+# .github/workflows/secret-scan.yml is the backstop for that case.
+#
+# Keep the gitleaks rev in sync with .github/workflows/secret-scan.yml.
+# Update all hook versions with: pre-commit autoupdate
+
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+        name: Detect secrets and PII (gitleaks)
