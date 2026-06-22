@@ -37,6 +37,13 @@ class FileIssueTest(unittest.TestCase):
         self.assertTrue(out["truncated"])
         self.assertLessEqual(len(out["url"]), file_issue.URL_LIMIT)
 
+    def test_url_path_truncates_multibyte_oversized_body(self):
+        # Test with multibyte characters (3 bytes each in UTF-8)
+        big = "你" * 8000
+        out = file_issue.create(REPO, "t", big, [], dry_run=True, gh_check=lambda: False)
+        self.assertTrue(out["truncated"])
+        self.assertLessEqual(len(out["url"]), file_issue.URL_LIMIT)
+
 
 if __name__ == "__main__":
     unittest.main()

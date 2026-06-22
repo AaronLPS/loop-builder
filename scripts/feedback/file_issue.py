@@ -70,7 +70,7 @@ def create(repo: str, title: str, body: str, labels: list[str], *,
             except ValueError:
                 issue = None
         return {"method": "gh", "issue": issue, "url": url,
-                "command": build_gh_command(repo, title, body_file, labels), "truncated": False}
+                "command": build_gh_command(repo, title, "<body-file>", labels), "truncated": False}
 
     # URL fallback (user submits as themselves in their logged-in browser).
     url = build_url(repo, title, body, labels)
@@ -81,6 +81,16 @@ def create(repo: str, title: str, body: str, labels: list[str], *,
         short = body[:room] + "\n\n(truncated — full body printed in terminal)"
         url = build_url(repo, title, short, labels)
         truncated = True
+        # Ensure final URL length (after percent-encoding) stays under limit
+        while len(url) > URL_LIMIT and short:
+            # Remove chars from body portion (before the truncation message)
+            body_part = short[:short.rfind("\n\n(truncated")]
+            if body_part:
+                body_part = body_part[:-1]  # Remove one character
+                short = body_part + "\n\n(truncated — full body printed in terminal)"
+                url = build_url(repo, title, short, labels)
+            else:
+                break
     if not dry_run:
         (url_opener or webbrowser.open)(url)
     return {"method": "url", "issue": None, "url": url, "command": None, "truncated": truncated}
