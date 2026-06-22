@@ -74,8 +74,9 @@ For each cluster, write:
   1. What happened (the symptom, with relevant log lines or output from the entries).
   2. Repro / context (the loop name, the command that failed, the state at the time).
   3. Environment (OS, Claude Code version if known, any relevant config).
-- **Labels** — always include `via-feedback-tool` plus the entry's category (e.g.
-  `bug`, `enhancement`). Separate with commas.
+- **Labels** — always include `via-feedback-tool` plus the entry's category (`bug`,
+  `feedback`, or `idea`). Separate with commas. Labels such as `enhancement` are
+  freeform GitHub labels you may add, but they are not valid `--category` values.
 
 ### Step 3 — Deduplicate
 
@@ -98,11 +99,22 @@ If no strong match exists, proceed to the next step.
 
 ### Step 4 — Sanitize the body
 
-Pipe the draft body through `sanitize` to catch local paths, email addresses, API
+Write the draft body to a temporary file (`body.md`) first — issue bodies are
+multi-line markdown and shell-quoting with `echo` mangles them. Then run the
+sanitizer:
+
+```bash
+# Write the draft to a temp file
+cat > body.md <<'EOF'
+<your draft body here>
+EOF
+```
+
+Pass that file through `sanitize` to catch local paths, email addresses, API
 keys, or other private content before it leaves the machine:
 
 ```bash
-echo "<draft body>" | python3 scripts/feedback/cli.py sanitize
+python3 scripts/feedback/cli.py sanitize < body.md
 ```
 
 The command returns `{"text": "<cleaned body>", "notes": [...]}`. Surface any
@@ -134,16 +146,16 @@ open or discard them.
 On explicit yes:
 
 ```bash
-echo "<sanitized body>" | python3 scripts/feedback/cli.py file \
+python3 scripts/feedback/cli.py file \
   --repo AaronLPS/loop-builder \
   --title "<sanitized title>" \
-  --labels via-feedback-tool,<category>
+  --labels via-feedback-tool,<category> < body.md
 ```
 
 The command returns a JSON result. Two outcomes:
 
 - `"method": "gh"` — the issue was filed via the `gh` CLI. Report the issue number
-  (`result.number`) to the user so they can follow up.
+  (`result.issue`) to the user so they can follow up.
 - `"method": "url"` — `gh` is not available or not authenticated. A prefilled URL
   was opened in the user's browser. Tell the user to review the prefilled form and
   click Submit themselves.
@@ -196,7 +208,23 @@ discards its own failure if it cannot write the log.
 |------|---------|------|
 | Capture a local entry | `cli.py append --category <cat> --text "..."` | on error / blockage |
 | Load the backlog | `cli.py list-open` | start of review session |
-| Check for duplicates | `cli.py dedupe --repo ... --title "..."` | before drafting |
-| Sanitize the body | `echo "..." \| cli.py sanitize` | before showing consent gate |
-| File the issue | `echo "..." \| cli.py file --repo ... --title "..." --labels ...` | after explicit yes |
+| Check for duplicates | `cli.py dedupe --repo ... --title "..."` | after drafting, before filing |
+| Sanitize the body | `cli.py sanitize < body.md` | before showing consent gate |
+| File the issue | `cli.py file --repo ... --title "..." --labels ... < body.md` | after explicit yes |
 | Mark entries filed | `cli.py mark-filed --ids ... --issue <N>` | after successful file |
+
+---
+
+## Maintainer setup
+
+For the `gh` filing path to work, the following labels must exist in the repo
+(created once; `gh issue create` errors on unknown labels):
+
+```bash
+gh label create via-feedback-tool --description "filed via the feedback tool"
+gh label create bug --description "something is broken"
+gh label create feedback --description "general feedback"
+gh label create idea --description "feature request or idea"
+```
+
+Run these once against the target repo after initial setup.
