@@ -28,3 +28,6 @@ jobs:
 
       - name: Evals parse
         run: python3 -c "import json; json.load(open('evals/evals.json'))"
+
+      - name: Feedback module tests
+        run: bash scripts/tests/test_feedback.sh

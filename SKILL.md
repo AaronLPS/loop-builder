@@ -259,6 +259,10 @@ Concretely, write:
   against current docs; never fabricate flags.**
 - **`HUMAN-GATES.md`** — the irreversible-actions list **and** the budget/stop
   condition, together. This file is mandatory; see below.
+- **Self-reporting (opt-in).** Ask: "Add self-reporting to this loop? (logs its own
+  errors locally for you to review later — never auto-files)" If yes, add the hook
+  snippet from `references/feedback-to-issue.md` to the verifier. Errors collect
+  locally; the user files them deliberately in a later review session.
 
 ### 3c. Always emit human gates + a budget
 
@@ -398,3 +402,29 @@ State these to the user as the operating posture:
   explicit budgets and dynamic intervals.
 - **Most of "agentic" is plumbing.** The discipline is in the guardrails around the
   decision, not in the decision being magic.
+
+## Collecting feedback and reporting bugs
+
+Bugs and rough edges are captured **locally** — never auto-filed — and filed to
+GitHub under **your own account** only when you explicitly say so.
+
+**Passive capture (on errors).** When loop-builder hits an error or you are clearly
+blocked, append a quiet entry:
+
+```bash
+python3 scripts/feedback/cli.py append --category bug --text "<what broke + context>"
+```
+
+This writes to `~/.loop-builder/feedback.jsonl` only. No network call is made.
+
+**Review and file.** When you ask to "report a bug," "give feedback," or "review
+feedback," load `references/feedback-to-issue.md` (on demand — do not read it
+during normal loop-building). That playbook covers the full flow: `list-open` ->
+cluster -> draft -> dedupe -> sanitize -> **mandatory consent gate** -> `file` ->
+`mark-filed`. Nothing is filed until you see the full title + body + labels and say
+yes.
+
+**Generated loops.** During scaffolding, ask whether to add self-reporting to the
+loop (see the opt-in hook in `references/feedback-to-issue.md`). Self-reporting logs
+failures locally; the user reviews and files them deliberately — the loop never
+contacts GitHub on its own.
