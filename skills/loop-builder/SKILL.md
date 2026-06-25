@@ -261,7 +261,8 @@ Concretely, write:
   condition, together. This file is mandatory; see below.
 - **Self-reporting (opt-in).** Ask: "Add self-reporting to this loop? (logs its own
   errors locally for you to review later — never auto-files)" If yes, add the hook
-  snippet from `references/feedback-to-issue.md` to the verifier. Errors collect
+  snippet from the `loop-builder:feedback-to-issue` skill's
+  `references/feedback-to-issue.md` to the verifier. Errors collect
   locally; the user files them deliberately in a later review session.
 
 ### 3c. Always emit human gates + a budget
