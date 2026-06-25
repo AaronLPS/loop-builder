@@ -165,6 +165,13 @@ reference — matching how loop-builder already treats its own references.
 - Multi-platform plugin packaging (Codex/Cursor/Gemini/etc.).
 - Any behavior change to loop-builder or feedback-to-issue logic — this is a
   structural move plus the cross-reference rewiring, nothing more.
+- **Deterministic auto-capture on every error (follow-up).** Today's passive
+  capture is agent-discretion: it fires only when loop-builder is the active skill
+  and the agent recognizes the failure, not as a guaranteed trap on every error. A
+  future enhancement could make capture deterministic via a real hook — e.g. a
+  `PostToolUse`/`Stop` hook in `settings.json` for loop-builder sessions, or a
+  `trap` in scaffolded loop wrapper scripts — so no failure is missed regardless of
+  agent judgment. Deferred; not part of this restructure.
 
 ## Risks
 
