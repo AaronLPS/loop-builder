@@ -2,11 +2,11 @@
 
 # loop-builder
 
-**A [Claude Code](https://docs.claude.com/en/docs/claude-code) skill that interviews you, then scaffolds a self-running agent loop — files and all.**
+**A [Claude Code](https://docs.claude.com/en/docs/claude-code) plugin bundling two skills: `loop-builder` (interviews you and scaffolds a self-running loop) and `feedback-to-issue` (files your feedback as a GitHub issue under your own account).**
 
 An unattended, scheduled, self-verifying agent workflow for whatever you describe.
 
-[![Skill](https://img.shields.io/badge/Claude_Code-skill-d97757?style=flat-square)](https://docs.claude.com/en/docs/claude-code)
+[![Plugin](https://img.shields.io/badge/Claude_Code-plugin-d97757?style=flat-square)](https://docs.claude.com/en/docs/claude-code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 [![Status](https://img.shields.io/badge/status-beta-yellow?style=flat-square)](#)
 [![Patterns](https://img.shields.io/badge/loop_patterns-4-7c3aed?style=flat-square)](#the-loop-patterns-pick-the-simplest-that-works)
@@ -24,7 +24,7 @@ An unattended, scheduled, self-verifying agent workflow for whatever you describ
 | **What you get** | A skill, a separate verifier, a state file, human-gates, and a trigger stub |
 | **How you start** | Just describe the task — it triggers without the word "loop" |
 | **What's built in** | A separate checker, a human gate on irreversible actions, and a budget/stop |
-| **Install** | `git clone … ~/.claude/skills/loop-builder` ([jump ↓](#install)) |
+| **Install** | `/plugin install loop-builder@loop-builder` ([jump ↓](#install)) |
 
 ---
 
@@ -166,7 +166,7 @@ The skill selects **one** and loads only its reference file (progressive disclos
 
 > Guidance the skill repeats: **compose the simplest blocks; don't reach for a framework you can't debug.** A single loop with a deterministic verifier beats an elaborate multi-agent system you can't reason about.
 
-**Where it runs** is a separate choice from *what shape it is*. By default the skill scaffolds against Claude Code primitives (`/goal "<verifiable condition>"` for run-until-done, `/loop` for intervals — they combine into a self-terminating loop — plus worktrees, sub-agents, a bundled verifier, a state file). If you have a managed runtime such as **Claude Managed Agents** — whose native cron schedules, rubric "grader", memory, and review-before-it-lands gates map almost 1:1 onto the six blocks — the skill can target that instead. See [`references/deploy-claude-managed-agents.md`](references/deploy-claude-managed-agents.md) (kept behind an uncertainty flag, since it's a fast-moving beta).
+**Where it runs** is a separate choice from *what shape it is*. By default the skill scaffolds against Claude Code primitives (`/goal "<verifiable condition>"` for run-until-done, `/loop` for intervals — they combine into a self-terminating loop — plus worktrees, sub-agents, a bundled verifier, a state file). If you have a managed runtime such as **Claude Managed Agents** — whose native cron schedules, rubric "grader", memory, and review-before-it-lands gates map almost 1:1 onto the six blocks — the skill can target that instead. See [`skills/loop-builder/references/deploy-claude-managed-agents.md`](skills/loop-builder/references/deploy-claude-managed-agents.md) (kept behind an uncertainty flag, since it's a fast-moving beta).
 
 ---
 
@@ -185,7 +185,7 @@ A few deliberate choices, and the reasoning behind each:
 ## Repository layout
 
 ```
-loop-builder/                  ← clone this into ~/.claude/skills/loop-builder
+loop-builder/                  ← the plugin root (installed via /plugin install)
 ├── SKILL.md                   the skill: elicit → select → scaffold (< 500 lines)
 ├── references/
 │   ├── loops-and-loop-engineering.md      the knowledge backbone (source of truth)
@@ -216,14 +216,20 @@ loop-builder/                  ← clone this into ~/.claude/skills/loop-builder
 
 ---
 
-## Install
+### Install
 
 ```bash
-# clone directly into your Claude Code skills directory
-git clone https://github.com/AaronLPS/loop-builder.git ~/.claude/skills/loop-builder
+# Add this repo as a plugin marketplace, then install the plugin
+/plugin marketplace add AaronLPS/loop-builder
+/plugin install loop-builder@loop-builder
 ```
 
-Or drop it into a single project at `<project>/.claude/skills/loop-builder/`.
+The plugin bundles two skills:
+
+| Skill | Trigger | What it does |
+|-------|---------|--------------|
+| `loop-builder` | "automate / schedule / monitor this..." | Interviews you and scaffolds a self-running loop |
+| `feedback-to-issue` | "report a bug / give feedback" | Files a sanitized GitHub issue under your own account |
 
 ## Use
 
@@ -316,7 +322,7 @@ gitleaks false positive with a trailing `# gitleaks:allow` comment or the
 
 ## References & sources
 
-The concepts here are not invented; they come from the loop-engineering literature, captured and graded in [`references/loops-and-loop-engineering.md`](references/loops-and-loop-engineering.md), which is the skill's knowledge backbone. Key sources:
+The concepts here are not invented; they come from the loop-engineering literature, captured and graded in [`skills/loop-builder/references/loops-and-loop-engineering.md`](skills/loop-builder/references/loops-and-loop-engineering.md), which is the skill's knowledge backbone. Key sources:
 
 **Primary / originating**
 - **Addy Osmani — *Loop Engineering*** (addyosmani.com, June 2026): coined the term and the six-block anatomy.
