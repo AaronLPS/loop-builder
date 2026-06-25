@@ -145,6 +145,26 @@ SKILL.md), with script paths updated to the skill-local `scripts/` location. The
 SKILL.md carries only the trigger, the guarantees, and the pointer into that
 reference — matching how loop-builder already treats its own references.
 
+## Memory and state (unaffected — no migration)
+
+Every persistent store this project touches is anchored **outside** the repo
+tree, so restructuring the repo into a plugin migrates no data:
+
+- **Feedback log:** `feedback_log.py` resolves `Path.home() / ".loop-builder" /
+  "feedback.jsonl"` (override `LOOP_BUILDER_FEEDBACK_FILE`) — HOME-anchored, not
+  repo-relative. Existing logs stay valid; the path is **kept as-is** (renaming it
+  would orphan every existing user's log).
+- **Generated-loop run state:** loop-builder's "changing state → memory" doctrine
+  puts run state at `loops/<loop-name>/STATE.md` in the *user's target project*,
+  never inside loop-builder. Invisible to this restructure.
+- **Env-var contract unchanged:** `LOOP_BUILDER_FEEDBACK_FILE` and
+  `LOOP_BUILDER_SCRIPTS` keep their names, so overrides and already-scaffolded
+  loops keep resolving.
+
+Only *code* moves (the `cli.py` that reads/writes the log), already covered under
+the cross-reference rewiring. The memory/state **mechanism and stored data need no
+change.**
+
 ## Migration mechanics
 
 - Use `git mv` for every move to preserve file history.
