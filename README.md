@@ -175,7 +175,7 @@ The skill selects **one** and loads only its reference file (progressive disclos
 A few deliberate choices, and the reasoning behind each:
 
 - **`SKILL.md` body kept under ~500 lines, depth pushed into `references/`** — *progressive disclosure*. A loop pays token cost on every tick; skills preload only name + description and load the body when relevant, and load bundled references only when a specific pattern is chosen. This keeps the per-run context small while still carrying deep knowledge.
-- **Deterministic verifiers live in `scripts/`, not in prose** — verification is the part that must be reliable, so it belongs in code with a binary exit status a scheduler can branch on. The bundled scripts are **red-green tested** (`scripts/tests/`): the test was written first, watched fail, then made to pass.
+- **Deterministic verifiers live in `skills/loop-builder/scripts/`, not in prose** — verification is the part that must be reliable, so it belongs in code with a binary exit status a scheduler can branch on. The bundled scripts are **red-green tested** (`skills/loop-builder/scripts/tests/`): the test was written first, watched fail, then made to pass.
 - **The verifier is always *separate* from the generator** — a model grading its own output is too generous. The maker/checker split is the single most important guardrail.
 - **Every generated loop ships a human-gate list AND a budget** — prompt injection is unsolved, so a loop that reads issues/email/web ingests untrusted text every cycle; the durable defense is a *permanent human gate on irreversible actions* (merge, send, spend, delete). And a loop with no stop condition is a runaway cost. The skill refuses to call a loop "done" if either is missing.
 - **Durable knowledge → the loop's own skill; changing progress → an external state file** — enforced in every artifact, never blurred.
@@ -185,33 +185,23 @@ A few deliberate choices, and the reasoning behind each:
 ## Repository layout
 
 ```
-loop-builder/                  ← the plugin root (installed via /plugin install)
-├── SKILL.md                   the skill: elicit → select → scaffold (< 500 lines)
-├── references/
-│   ├── loops-and-loop-engineering.md      the knowledge backbone (source of truth)
-│   ├── pattern-react-deterministic-verifier.md
-│   ├── pattern-evaluator-optimizer.md
-│   ├── pattern-orchestrator-workers.md
-│   ├── pattern-ralph.md
-│   ├── deploy-claude-managed-agents.md     optional deploy target (beta; behind uncertainty flag)
-│   └── skill-bank/                         catalog of borrowable external skills/plugins
-│       ├── recommended.md                  curated standouts (preferred by the search sub-agent)
-│       ├── catalog/                        comprehensive per-source listings (searched on demand)
-│       ├── search-agent.md                 prompt for the skill-bank search sub-agent
-│       └── sources.yml                     upstream sources + refresh/build procedure
-├── scripts/
-│   ├── verifier_template.sh               generic predicate runner (exits non-zero on fail)
-│   ├── verify_no_p1_unassigned.sh         worked example (operates on gh-style JSON)
-│   ├── lint_skill_bank_recommended.sh     validates the curated recommended-list schema
-│   ├── refresh_skill_bank.sh              reports recommended-list drift vs upstream
-│   ├── format_catalog.sh                  SKILL.md frontmatter -> catalog rows
-│   ├── build_skill_bank_catalog.sh        generate per-source catalogs from upstream
-│   ├── lint_skill_bank_catalog.sh         validates catalog schema
-│   └── tests/                             red-green tests + fixtures
-├── evals/evals.json           trigger tests (positive + negative) + per-eval expectations
-├── docs/design-spec.md        how this skill itself was designed
-├── LICENSE
-└── README.md
+loop-builder/                      ← the plugin root (installed via /plugin install)
+├── .claude-plugin/
+│   ├── plugin.json
+│   └── marketplace.json
+├── skills/
+│   ├── loop-builder/              ← flagship skill
+│   │   ├── SKILL.md
+│   │   ├── references/            ← loops-and-loop-engineering.md, pattern-*.md,
+│   │   │                             deploy-claude-managed-agents.md, skill-bank/
+│   │   └── scripts/               ← verifier_template.sh, skill-bank tooling, tests/
+│   └── feedback-to-issue/         ← files feedback as a GitHub issue under your own account
+│       ├── SKILL.md
+│       ├── references/feedback-to-issue.md
+│       └── scripts/feedback/      ← CLI + module (tests under scripts/tests/)
+├── docs/ · evals/
+├── AGENTS.md · README.md · LICENSE
+└── .github/workflows/tests.yml
 ```
 
 ---
@@ -283,8 +273,8 @@ The skill *designs and writes* the loop; you *run* it with Claude Code's native 
 ## Test the bundled scripts
 
 ```bash
-bash scripts/tests/test_verifiers.sh
-bash scripts/tests/test_skill_bank.sh
+bash skills/loop-builder/scripts/tests/test_verifiers.sh
+bash skills/loop-builder/scripts/tests/test_skill_bank.sh
 ```
 
 ---
