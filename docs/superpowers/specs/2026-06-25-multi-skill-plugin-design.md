@@ -107,9 +107,18 @@ distinct roles. They split cleanly:
    `description`, discoverable without loop-builder being active.
 2. **The inline passive-capture hook snippet** for generated loops → **stays
    inline** in loop-builder. The playbook itself states this one-liner is "the
-   only part a generated loop needs inline." A generated loop therefore has **no
-   runtime dependency** on the feedback-to-issue skill — it only appends to the
-   local JSONL log; review/file happens later via the skill.
+   only part a generated loop needs inline."
+
+A generated loop never *invokes* the feedback-to-issue skill — it only appends to
+the local JSONL log, and review/file happens later when the user triggers the
+skill. But the hook does **shell out to that skill's `cli.py`** via the loop's
+`LOOP_BUILDER_SCRIPTS` path variable, so there is a runtime *file-path*
+dependency. Today that variable resolves to `scripts/feedback/`; after the move it
+must resolve to **`skills/feedback-to-issue/scripts/feedback/`**. The implementation
+plan must therefore update the path the scaffolder writes into generated loops (and
+the playbook's "`LOOP_BUILDER_SCRIPTS` — path to `scripts/feedback/`" note) to the
+new location. The path stays parameterized, so a loop's own copy keeps working as
+long as its `LOOP_BUILDER_SCRIPTS` points at wherever `cli.py` actually lives.
 
 ## feedback-to-issue SKILL.md
 
