@@ -1,0 +1,9 @@
+{
+  "name": "loop-builder",
+  "description": "Design and scaffold self-running agent loops, and file feedback as GitHub issues under your own account.",
+  "version": "0.1.0",
+  "author": { "name": "AaronLPS" },
+  "homepage": "https://github.com/AaronLPS/loop-builder",
+  "repository": "https://github.com/AaronLPS/loop-builder",
+  "license": "MIT"
+}

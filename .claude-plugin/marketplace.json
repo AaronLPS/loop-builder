@@ -1,0 +1,11 @@
+{
+  "name": "loop-builder",
+  "owner": { "name": "AaronLPS" },
+  "plugins": [
+    {
+      "name": "loop-builder",
+      "source": "./",
+      "description": "Design and scaffold self-running agent loops, plus a feedback-to-issue skill."
+    }
+  ]
+}
