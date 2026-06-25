@@ -412,19 +412,21 @@ GitHub under **your own account** only when you explicitly say so.
 blocked, append a quiet entry:
 
 ```bash
-python3 scripts/feedback/cli.py append --category bug --text "<what broke + context>"
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/feedback-to-issue/scripts/feedback/cli.py" \
+  append --category bug --text "<what broke + context>"
 ```
 
 This writes to `~/.loop-builder/feedback.jsonl` only. No network call is made.
 
-**Review and file.** When you ask to "report a bug," "give feedback," or "review
-feedback," load `references/feedback-to-issue.md` (on demand — do not read it
-during normal loop-building). That playbook covers the full flow: `list-open` ->
-cluster -> draft -> dedupe -> sanitize -> **mandatory consent gate** -> `file` ->
-`mark-filed`. Nothing is filed until you see the full title + body + labels and say
-yes.
+**Review and file.** When the user asks to "report a bug," "give feedback," or
+"review feedback," invoke the `loop-builder:feedback-to-issue` skill — it owns the
+full flow (list-open → cluster → draft → dedupe → sanitize → **mandatory consent
+gate** → file → mark-filed) under the user's own account. Do not inline that flow
+here.
 
 **Generated loops.** During scaffolding, ask whether to add self-reporting to the
-loop (see the opt-in hook in `references/feedback-to-issue.md`). Self-reporting logs
-failures locally; the user reviews and files them deliberately — the loop never
-contacts GitHub on its own.
+loop (the opt-in hook lives in the `loop-builder:feedback-to-issue` skill's
+`references/feedback-to-issue.md`). When opted in, resolve the feedback CLI path via
+`${CLAUDE_PLUGIN_ROOT}/skills/feedback-to-issue/scripts/feedback` and bake it into
+the loop's `LOOP_BUILDER_SCRIPTS` variable. Self-reporting logs failures locally; the
+loop never contacts GitHub on its own.
