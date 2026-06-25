@@ -98,23 +98,34 @@ rewrite needed there. Only the cross-skill links change (next section).
 
 ## The cross-reference rewiring
 
-Today `loop-builder/SKILL.md` points at `references/feedback-to-issue.md` in two
-distinct roles. They split cleanly:
+Today `loop-builder/SKILL.md` reaches into the feedback machinery in **three**
+distinct roles. They split as follows:
 
 1. **Review / file flow** (when the user reports a bug or reviews feedback) →
    replaced by *"invoke the `loop-builder:feedback-to-issue` skill."* This is the
    whole point of graduating it: the trigger now lives on the skill's own
    `description`, discoverable without loop-builder being active.
-2. **The inline passive-capture hook snippet** for generated loops → **stays
+2. **loop-builder's own passive capture** (the agent runs `cli.py append` when it
+   judges loop-builder itself hit an error/blockage during a session) → **stays an
+   instruction in loop-builder's SKILL.md**, but its command path moves from
+   `scripts/feedback/cli.py` to `skills/feedback-to-issue/scripts/feedback/cli.py`.
+   This is agent-discretion behavior, not an automated hook — "passive" only from
+   the user's side (no prompt, local-only). It depends on loop-builder being the
+   active skill and on the agent recognizing the error; it is not a guaranteed trap
+   on every failure.
+3. **The inline passive-capture hook snippet** for generated loops → **stays
    inline** in loop-builder. The playbook itself states this one-liner is "the
    only part a generated loop needs inline."
 
-A generated loop never *invokes* the feedback-to-issue skill — it only appends to
-the local JSONL log, and review/file happens later when the user triggers the
-skill. But the hook does **shell out to that skill's `cli.py`** via the loop's
-`LOOP_BUILDER_SCRIPTS` path variable, so there is a runtime *file-path*
-dependency. Today that variable resolves to `scripts/feedback/`; after the move it
-must resolve to **`skills/feedback-to-issue/scripts/feedback/`**. The implementation
+Roles 2 and 3 both shell out to the feedback `cli.py` by file path, so both path
+references move to the skill-local location. Neither *invokes* the
+feedback-to-issue skill — they only append to the local JSONL log; review/file
+happens later when the user triggers the skill.
+
+For role 3 specifically, the generated loop reaches `cli.py` through its own
+`LOOP_BUILDER_SCRIPTS` path variable. Today that variable resolves to
+`scripts/feedback/`; after the move it must resolve to
+**`skills/feedback-to-issue/scripts/feedback/`**. The implementation
 plan must therefore update the path the scaffolder writes into generated loops (and
 the playbook's "`LOOP_BUILDER_SCRIPTS` — path to `scripts/feedback/`" note) to the
 new location. The path stays parameterized, so a loop's own copy keeps working as
