@@ -24,3 +24,8 @@ loops/*/runs/
 
 # Understand Anything — generated knowledge graph + analysis scratch (regenerable)
 .understand-anything/
+
+# Personal-identifier denylist for the privacy push gate — contains PII
+# (real name / email), so it is per-clone and never committed. Copy from
+# .privacy-denylist.example.
+.privacy-denylist

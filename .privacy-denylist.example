@@ -1,0 +1,8 @@
+# Personal-identifier denylist for tools/privacy-scan.sh (local pre-push).
+# Copy to .privacy-denylist (gitignored) and fill in real values — one term
+# per line, case-insensitive literal match, '#' comments allowed.
+# The pre-push gate fails if any term appears in tracked content.
+#
+# Examples (replace with your own; do NOT commit real values):
+# Your Real Name
+# you@personal-email.example

@@ -5,9 +5,9 @@
 #
 # Thereafter every `git commit` scans the staged changes before they enter
 # history. Bypass (discouraged) with `git commit --no-verify` — the CI job in
-# .github/workflows/secret-scan.yml is the backstop for that case.
+# .github/workflows/privacy-scan.yml is the backstop for that case.
 #
-# Keep the gitleaks rev in sync with .github/workflows/secret-scan.yml.
+# Keep the gitleaks rev in sync with .github/workflows/privacy-scan.yml.
 # Update all hook versions with: pre-commit autoupdate
 
 repos:
@@ -29,4 +29,11 @@ repos:
         entry: '/(?:home|Users)/[A-Za-z0-9._-]+/'
         types: [text]
         # The hook's own pattern definitions necessarily contain the pattern.
-        exclude: '^(\.pre-commit-config\.yaml|\.github/workflows/secret-scan\.yml|README\.md)$'
+        exclude: '^(\.pre-commit-config\.yaml|\.github/workflows/privacy-scan\.yml|README\.md)$'
+      - id: privacy-scan
+        name: Privacy push gate (author / denylist / scratch / links)
+        language: script
+        entry: tools/privacy-scan.sh
+        stages: [pre-push]
+        pass_filenames: false
+        always_run: true
