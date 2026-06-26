@@ -308,7 +308,7 @@ gitleaks false positive with a trailing `# gitleaks:allow` comment or the
 `[allowlist]` block in `.gitleaks.toml`; bump pinned hook versions with
 `pre-commit autoupdate`.
 
-Contributors: run `pre-commit install -t pre-push` and create `.privacy-denylist` from the example — see [AGENTS.md](AGENTS.md#privacy-push-gate). No emoji in docs.
+> Contributors: run `pre-commit install -t pre-push` and create `.privacy-denylist` from the example — see [AGENTS.md](AGENTS.md#privacy-push-gate). No emoji in docs.
 
 ---
 

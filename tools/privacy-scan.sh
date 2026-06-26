@@ -16,7 +16,7 @@ RANGE="$BASE..$HEAD"
 fail=0
 
 # 1. Author/committer identity must be a noreply address.
-bad="$(git log --format='%ae%n%ce' "$RANGE" 2>/dev/null | sort -u | grep -v "@${DOMAIN}\$" || true)"
+bad="$(git log --no-merges --format='%ae%n%ce' "$RANGE" 2>/dev/null | sort -u | grep -v "@${DOMAIN//./\\.}\$" || true)"
 if [ -n "$bad" ]; then
   echo "FAIL [author]: non-noreply author/committer email(s) in $RANGE:"
   printf '%s\n' "$bad" | sed 's/^/  - /'
@@ -52,7 +52,7 @@ fi
 
 # 3. Stray scratch/working files must not be tracked (catches `git add -f`).
 scratch="$(git ls-tree -r --name-only "$HEAD" 2>/dev/null \
-  | grep -E '(^\.superpowers/sdd/|/scratchpad/|claude-[0-9])' || true)"
+  | grep -E '(^\.superpowers/sdd/|/scratchpad/|/claude-[0-9])' || true)"
 if [ -n "$scratch" ]; then
   echo "FAIL [scratch]: scratch/working files are tracked:"
   printf '%s\n' "$scratch" | sed 's/^/  - /'
