@@ -1,6 +1,6 @@
 import sys, pathlib, unittest
 
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "scripts" / "feedback"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "feedback"))
 import sanitize  # noqa: E402
 
 

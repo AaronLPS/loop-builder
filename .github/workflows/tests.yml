@@ -12,22 +12,22 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Verifier tests
-        run: bash scripts/tests/test_verifiers.sh
+        run: bash skills/loop-builder/scripts/tests/test_verifiers.sh
 
       - name: skill-bank tests
-        run: bash scripts/tests/test_skill_bank.sh
+        run: bash skills/loop-builder/scripts/tests/test_skill_bank.sh
 
       - name: Lint recommended list
-        run: bash scripts/lint_skill_bank_recommended.sh
+        run: bash skills/loop-builder/scripts/lint_skill_bank_recommended.sh --file skills/loop-builder/references/skill-bank/recommended.md
 
       - name: Lint catalogs
         run: |
-          for c in references/skill-bank/catalog/*.md; do
-            bash scripts/lint_skill_bank_catalog.sh --file "$c"
+          for c in skills/loop-builder/references/skill-bank/catalog/*.md; do
+            bash skills/loop-builder/scripts/lint_skill_bank_catalog.sh --file "$c"
           done
 
       - name: Evals parse
         run: python3 -c "import json; json.load(open('evals/evals.json'))"
 
       - name: Feedback module tests
-        run: bash scripts/tests/test_feedback.sh
+        run: bash skills/feedback-to-issue/scripts/tests/test_feedback.sh

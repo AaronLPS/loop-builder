@@ -4,10 +4,16 @@ Conventions for anyone — human or agent — working in this repository.
 
 ## What this repo is
 
-`loop-builder` is a Claude Code **skill** that interviews the user and scaffolds a
-self-running agent "loop." The skill body is `SKILL.md`; deep knowledge lives in
-`references/`; bundled verifier scripts live in `scripts/`; trigger/behavior evals
-live in `evals/evals.json`.
+`loop-builder` is a Claude Code **plugin** bundling peer skills under `skills/`:
+
+- `skills/loop-builder/` — interviews the user and scaffolds a self-running agent
+  "loop." Body is `SKILL.md`; deep knowledge in `references/`; bundled verifier and
+  skill-bank scripts in `scripts/` (tested under `scripts/tests/`).
+- `skills/feedback-to-issue/` — captures feedback and files it as a GitHub issue
+  under the user's own account. Body is `SKILL.md`; playbook in `references/`;
+  deterministic tooling in `scripts/feedback/` (tested under `scripts/tests/`).
+
+The manifest lives in `.claude-plugin/`; trigger/behavior evals in `evals/evals.json`.
 
 ## Branching
 
@@ -32,6 +38,15 @@ live in `evals/evals.json`.
   bundled scripts in `scripts/` are red-green tested under `scripts/tests/`.
 - Durable knowledge → a skill; changing state → an external state file. Never put
   mutable progress inside a `SKILL.md`.
+- **Skill vs. reference (what graduates):** a capability becomes its own
+  `skills/<name>/` skill only if a user would trigger it *without* going through
+  another skill ("report a bug" stands alone; "the Ralph pattern" does not).
+  Reference knowledge stays nested under the owning skill's `references/`. Every
+  graduated skill's `description` is always-on context in every session, so keep
+  the bar high — graduate genuine standalone triggers only.
+- **Cross-skill references:** when one skill must run another skill's bundled
+  script, reference it via `${CLAUDE_PLUGIN_ROOT}/skills/<other>/…`. Within-skill
+  references stay relative to the skill dir.
 
 ## Commits
 

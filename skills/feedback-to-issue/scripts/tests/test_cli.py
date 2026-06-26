@@ -1,6 +1,6 @@
 import os, sys, io, json, pathlib, tempfile, contextlib, unittest
 
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "scripts" / "feedback"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "feedback"))
 import cli  # noqa: E402
 
 

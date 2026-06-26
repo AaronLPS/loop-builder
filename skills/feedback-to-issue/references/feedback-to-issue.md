@@ -192,7 +192,9 @@ python3 "$LOOP_BUILDER_SCRIPTS/cli.py" append --category bug \
 
 Variables the loop must define before calling this snippet:
 
-- `LOOP_BUILDER_SCRIPTS` — path to `scripts/feedback/` in the loop-builder repo.
+- `LOOP_BUILDER_SCRIPTS` — absolute path to this skill's `scripts/feedback/`
+  directory, i.e. `${CLAUDE_PLUGIN_ROOT}/skills/feedback-to-issue/scripts/feedback`,
+  resolved at scaffold time and baked into the generated loop.
 - `VERIFIER_LOG` — path to the log file the verifier writes each run.
 - `<loop-name>` — the loop's own name (literal, substituted at scaffold time).
 
