@@ -1,4 +1,4 @@
-name: secret-scan
+name: privacy-scan
 
 # Server-side backstop: even if a local commit skipped the pre-commit hook
 # (--no-verify) or was made on a machine without it installed, this scans the
@@ -37,10 +37,36 @@ jobs:
           # Mirrors the pygrep hook in .pre-commit-config.yaml. Scans tracked
           # files (not this workflow / hook config, which define the pattern).
           if git grep -nIE '/(home|Users)/[A-Za-z0-9._-]+/' -- \
-               ':!.github/workflows/secret-scan.yml' \
+               ':!.github/workflows/privacy-scan.yml' \
                ':!.pre-commit-config.yaml' \
                ':!README.md'; then
             echo "::error::machine-local absolute home path found in a tracked file"
             exit 1
           fi
           echo "no machine-local home paths found"
+
+  privacy-extras:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history so the range scan sees every commit
+      - name: Privacy gate (author / denylist / scratch / links)
+        env:
+          PRIVACY_DENYLIST: ${{ secrets.PRIVACY_DENYLIST }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          # PR: base..head ; push: before..after (fall back to last commit).
+          # SHAs come from env vars (never interpolated directly into the shell
+          # script body) to follow Actions injection-safe patterns.
+          if [ -n "$PR_BASE_SHA" ]; then
+            BASE="$PR_BASE_SHA"
+          elif [ -n "$PUSH_BEFORE_SHA" ] && \
+               git cat-file -e "${PUSH_BEFORE_SHA}^{commit}" 2>/dev/null; then
+            BASE="$PUSH_BEFORE_SHA"
+          else
+            BASE="$(git rev-parse HEAD~1 2>/dev/null || git rev-parse HEAD)"
+          fi
+          echo "scanning ${BASE}..HEAD"
+          bash tools/privacy-scan.sh "$BASE" HEAD
