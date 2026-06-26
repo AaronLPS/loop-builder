@@ -299,7 +299,7 @@ After that, every `git commit` scans the staged changes and blocks:
 | Local paths | `pygrep` hook | machine-local absolute home paths (`/home/<user>/...`) that leak a username |
 
 Both checks also run server-side in
-[`.github/workflows/secret-scan.yml`](.github/workflows/secret-scan.yml) on
+[`.github/workflows/privacy-scan.yml`](.github/workflows/privacy-scan.yml) on
 every push/PR, so a `--no-verify` bypass still gets caught.
 
 The config carries no personal data of its own; personal-email leakage is
@@ -307,6 +307,8 @@ handled by GitHub's email-privacy + push-protection settings. Allowlist a
 gitleaks false positive with a trailing `# gitleaks:allow` comment or the
 `[allowlist]` block in `.gitleaks.toml`; bump pinned hook versions with
 `pre-commit autoupdate`.
+
+Contributors: run `pre-commit install -t pre-push` and create `.privacy-denylist` from the example — see [AGENTS.md](AGENTS.md#privacy-push-gate). No emoji in docs.
 
 ---
 
