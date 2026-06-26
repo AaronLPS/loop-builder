@@ -69,5 +69,18 @@ out="$( cd "$d" && env -u PRIVACY_DENYLIST bash "$SCRIPT" HEAD~1 HEAD 2>&1 )"; c
 assert_exit "denylist-absent: skips, exit 0" 0 "$code"
 assert_contains "denylist-absent: prints NOTICE" "NOTICE [denylist]" "$out"
 
+# --- Scenario F: GitHub web-flow committer (squash/web-merge) => PASS (check 1) ---
+# A squash merge on the default branch is a single-parent commit (so --no-merges
+# does not exclude it) whose committer is `GitHub <noreply@github.com>`. That is
+# GitHub performing the merge, not a personal-identity leak — must be allowed.
+d="$(newrepo)"; ( cd "$d"
+  echo y > b.txt; git add b.txt
+  GIT_COMMITTER_NAME="GitHub" GIT_COMMITTER_EMAIL="noreply@github.com" \
+    git commit -q -m "web-flow squash"
+)
+out="$( cd "$d" && bash "$SCRIPT" HEAD~1 HEAD 2>&1 )"; code=$?
+assert_exit "author: GitHub web-flow committer passes" 0 "$code"
+assert_contains "author: PASS line present" "PASS [author]" "$out"
+
 echo "----"; echo "passed: $PASS  failed: $FAILED"
 [ "$FAILED" -eq 0 ]
