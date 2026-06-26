@@ -15,8 +15,13 @@ RANGE="$BASE..$HEAD"
 
 fail=0
 
-# 1. Author/committer identity must be a noreply address.
-bad="$(git log --no-merges --format='%ae%n%ce' "$RANGE" 2>/dev/null | sort -u | grep -v "@${DOMAIN//./\\.}\$" || true)"
+# 1. Author/committer identity must be a noreply address. Allowed: the configured
+#    user-noreply domain, plus GitHub's web-flow committer `noreply@github.com`
+#    (used for squash/web merges on the default branch — GitHub doing the merge,
+#    not a personal-identity leak; squash commits are single-parent so --no-merges
+#    does not exclude them).
+allow="@${DOMAIN//./\\.}\$|^noreply@github\.com\$"
+bad="$(git log --no-merges --format='%ae%n%ce' "$RANGE" 2>/dev/null | sort -u | grep -vE "$allow" || true)"
 if [ -n "$bad" ]; then
   echo "FAIL [author]: non-noreply author/committer email(s) in $RANGE:"
   printf '%s\n' "$bad" | sed 's/^/  - /'
