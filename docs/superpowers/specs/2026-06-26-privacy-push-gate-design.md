@@ -59,9 +59,11 @@ denylist (itself PII) never lives in tracked files.
   sensitive is committed. A committed `.privacy-denylist.example` documents the
   format with placeholders only.
 - **Keep the existing gitleaks + home-path gates as-is** — this is additive.
-- **OPEN (for review):** when `.privacy-denylist` is absent **locally**, does the
-  denylist check NOTICE-and-skip (CI still enforces) or hard-fail? Spec currently
-  assumes NOTICE-and-skip; confirm before build.
+- **Denylist absent locally → NOTICE-and-skip** (locked). A fresh clone without
+  `.privacy-denylist` is not blocked from pushing; the check prints a notice that it
+  is unconfigured. CI is the enforced backstop (it always has the `PRIVACY_DENYLIST`
+  secret). Rationale: keep first-push friction low; the unbypassable catch lives in
+  CI, consistent with the existing secret-gate posture.
 
 ## Plugin-aware placement (the part this revision re-thinks)
 
@@ -108,7 +110,7 @@ packaging pulls from `skills/<name>/`, not the repo root.)
      `git grep -nFi -- <tracked>` at HEAD — this naturally covers the new
      `.claude-plugin/*.json` and every doc. Any hit fails. If **no** denylist is
      configured: print a NOTICE and skip (do not hard-fail) — but CI sets the
-     secret, so CI effectively requires it. (See OPEN decision above.)
+     secret, so CI effectively requires it (per the locked decision above).
   3. **Scratch guard.** `git ls-files` must contain no path matching
      `^\.superpowers/sdd/`, `/scratchpad/`, or `claude-[0-9]`. Any match fails
      (catches `git add -f` past the nested `.gitignore`).
