@@ -53,3 +53,19 @@ The manifest lives in `.claude-plugin/`; trigger/behavior evals in `evals/evals.
 - End commit messages with the trailer:
   `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`
 - Commit or push only when the maintainer asks.
+
+## Privacy push gate
+
+A `pre-push` gate (`tools/privacy-scan.sh`) blocks identity/scratch/denylist
+leaks before they reach the public repo; CI (`.github/workflows/privacy-scan.yml`)
+is the unbypassable backstop. Per clone:
+
+1. `pip install pre-commit && pre-commit install -t pre-push`
+2. `cp .privacy-denylist.example .privacy-denylist` and fill in your real
+   name / personal email (the file is gitignored — never commit it).
+3. Repo admins: set the `PRIVACY_DENYLIST` GitHub Actions secret (newline- or
+   comma-separated terms) so CI enforces the denylist too.
+
+Checks: commit author/committer must be a `users.noreply.github.com` address;
+no denylisted term in tracked content; no `.superpowers/sdd/` or scratch files
+tracked; added external links are inventoried (non-blocking).
