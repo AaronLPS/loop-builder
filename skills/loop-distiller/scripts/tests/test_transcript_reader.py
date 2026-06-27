@@ -38,5 +38,26 @@ class LocateTest(unittest.TestCase):
         self.assertIsNone(tr.locate())
 
 
+class ParseTest(unittest.TestCase):
+    def setUp(self):
+        self.fix = pathlib.Path(__file__).resolve().parent / "fixtures" / "session.jsonl"
+
+    def test_parse_yields_events_with_line_index(self):
+        events = tr.parse(self.fix)
+        self.assertEqual(events[0]["type"], "user")
+        self.assertEqual(events[0]["text"], "triage my P1 issues")
+        self.assertEqual(events[0]["i"], 0)
+
+    def test_parse_extracts_tool_uses(self):
+        events = tr.parse(self.fix)
+        tools = [e for e in events if e["type"] == "tool_use"]
+        self.assertEqual(tools[0]["tool"], "Bash")
+        self.assertIn("gh issue list", tools[0]["text"])
+
+    def test_parse_skips_unparseable_lines(self):
+        events = tr.parse(self.fix)  # "not json at all" must not crash or appear
+        self.assertFalse(any("not json" in e["text"] for e in events))
+
+
 if __name__ == "__main__":
     unittest.main()

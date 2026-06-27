@@ -43,3 +43,47 @@ def locate(cwd: "str | None" = None) -> "pathlib.Path | None":
         return _newest_jsonl(pathlib.Path(d))
     cwd = cwd or os.getcwd()
     return _newest_jsonl(_projects_root() / encode_project_dir(cwd))
+
+
+def _block_text(block: dict) -> str:
+    if block.get("type") == "text":
+        return str(block.get("text", ""))
+    if block.get("type") == "tool_use":
+        inp = block.get("input", {})
+        return str(inp.get("command") or inp.get("file_path") or inp.get("pattern") or inp)
+    if block.get("type") == "tool_result":
+        c = block.get("content", "")
+        return c if isinstance(c, str) else json.dumps(c)
+    return ""
+
+
+def parse(path) -> list[dict]:
+    events: list[dict] = []
+    with open(path, "r", encoding="utf-8") as fh:
+        for i, line in enumerate(fh):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                obj = json.loads(line)
+            except (ValueError, TypeError):
+                continue
+            msg = obj.get("message") or {}
+            role = msg.get("role") or obj.get("type") or "unknown"
+            content = msg.get("content")
+            if not isinstance(content, list):
+                continue
+            for block in content:
+                if not isinstance(block, dict):
+                    continue
+                btype = block.get("type", "")
+                etype = "tool_use" if btype == "tool_use" else (
+                    "tool_result" if btype == "tool_result" else role)
+                events.append({
+                    "i": i,
+                    "role": role,
+                    "type": etype,
+                    "tool": block.get("name") if btype == "tool_use" else None,
+                    "text": _block_text(block),
+                })
+    return events

@@ -1,0 +1,6 @@
+{"type":"user","message":{"role":"user","content":[{"type":"text","text":"triage my P1 issues"}]}}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","name":"Bash","input":{"command":"gh issue list --label P1"}}]}}
+{"type":"user","message":{"role":"user","content":[{"type":"tool_result","content":"#41 #42"}]}}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"assigning owners"},{"type":"tool_use","name":"Bash","input":{"command":"gh issue edit 41 --add-assignee me"}}]}}
+not json at all
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","name":"Bash","input":{"command":"pytest -q"}}]}}
