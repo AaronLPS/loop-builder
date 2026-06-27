@@ -87,3 +87,42 @@ def parse(path) -> list[dict]:
                     "text": _block_text(block),
                 })
     return events
+
+
+# Deterministic keyword categorization. Coarse on purpose: it surfaces evidence
+# with line refs; the SKILL.md makes the loop-worthiness judgment, not this code.
+_VERIFY_KW = ("pytest", "go test", "npm test", "npm run test", "cargo test",
+              "make test", "make build", "ctest", "jest", "vitest", "tox")
+_VCS_KW = ("git commit", "git push", "gh pr create", "gh pr merge", "git merge",
+           "gh release", "deploy", "git tag")
+_DISCOVERY_TOOLS = {"Read", "Grep", "Glob", "LS", "NotebookRead"}
+_ACTION_TOOLS = {"Edit", "Write", "NotebookEdit"}
+_DISCOVERY_BASH = ("ls ", "cat ", "find ", "grep ", "rg ", "list", "status", "log ", "diff")
+
+
+def _hint(text: str) -> str:
+    return " ".join(text.split())[:80]
+
+
+def condense(events: list[dict]) -> dict:
+    buckets = {"discovery": [], "action": [], "verify": [], "vcs": []}
+    for e in events:
+        if e["type"] != "tool_use":
+            continue
+        tool, text = e["tool"] or "", e["text"] or ""
+        low = text.lower()
+        ref = {"i": e["i"], "tool": tool, "hint": _hint(text)}
+        if any(k in low for k in _VERIFY_KW):
+            buckets["verify"].append(ref)
+        elif any(k in low for k in _VCS_KW):
+            buckets["vcs"].append(ref)
+        elif tool in _ACTION_TOOLS:
+            buckets["action"].append(ref)
+        elif tool in _DISCOVERY_TOOLS:
+            buckets["discovery"].append(ref)
+        elif tool == "Bash" and any(k in low for k in _DISCOVERY_BASH):
+            buckets["discovery"].append(ref)
+        elif tool == "Bash":
+            buckets["action"].append(ref)  # other shell mutations
+    counts = {k: len(v) for k, v in buckets.items()}
+    return {**buckets, "counts": counts}

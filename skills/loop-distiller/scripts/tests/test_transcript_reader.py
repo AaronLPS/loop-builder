@@ -59,5 +59,26 @@ class ParseTest(unittest.TestCase):
         self.assertFalse(any("not json" in e["text"] for e in events))
 
 
+class CondenseTest(unittest.TestCase):
+    def setUp(self):
+        fix = pathlib.Path(__file__).resolve().parent / "fixtures" / "session.jsonl"
+        self.c = tr.condense(tr.parse(fix))
+
+    def test_discovery_captures_list_queries(self):
+        hints = " ".join(r["hint"] for r in self.c["discovery"])
+        self.assertIn("gh issue list", hints)
+
+    def test_action_captures_mutations(self):
+        hints = " ".join(r["hint"] for r in self.c["action"])
+        self.assertIn("gh issue edit", hints)
+
+    def test_verify_captures_test_runs(self):
+        self.assertTrue(any("pytest" in r["hint"] for r in self.c["verify"]))
+
+    def test_counts_match_bucket_lengths(self):
+        for k in ("discovery", "action", "verify", "vcs"):
+            self.assertEqual(self.c["counts"][k], len(self.c[k]))
+
+
 if __name__ == "__main__":
     unittest.main()
