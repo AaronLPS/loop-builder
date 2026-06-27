@@ -38,3 +38,7 @@ class LedgerTest(unittest.TestCase):
     def test_mark_changes_status(self):
         c = ledger.upsert("sigA", "triage", ["repo1"], ["fp1"], ["action"], 100)
         self.assertEqual(ledger.mark(c["id"], "built")["status"], "built")
+
+    def test_mark_raises_keyerror_on_unknown_id(self):
+        with self.assertRaises(KeyError):
+            ledger.mark("nonexistent-id", "built")

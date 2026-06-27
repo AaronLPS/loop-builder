@@ -19,8 +19,7 @@ def _verb(ref: dict) -> str:
 
 
 def signature(condensed: dict) -> str:
-    counts = condensed.get("counts", {})
-    blocks = tuple(b for b in _BUCKETS if counts.get(b, 0) > 0)
+    blocks = tuple(b for b in _BUCKETS if condensed.get(b))
     verbs = set()
     for b in _BUCKETS:
         for ref in condensed.get(b, []):

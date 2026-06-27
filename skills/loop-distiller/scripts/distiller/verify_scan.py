@@ -4,6 +4,11 @@ A candidate is sound only if it recurred enough (>= N distinct sessions), spans
 enough of the loop blocks (>= K), and active signatures are unique. This is the
 maker/checker split: the scan proposes; this program checks. Run standalone to
 exit non-zero on any problem.
+
+K=3 requires the core loop shape (discovery+action+verify) but leaves vcs
+optional, because a loop's commit/push step is usually the human gate it must
+NOT cross autonomously, so requiring vcs would wrongly filter out triage/draft/
+review loops.
 """
 from __future__ import annotations
 
@@ -11,7 +16,9 @@ import json
 import sys
 
 DEFAULT_N = 3
-DEFAULT_K = 4
+# K=3: require the 3 core blocks (discovery+action+verify); vcs is optional
+# because commit/push is typically the human gate a loop must not cross autonomously.
+DEFAULT_K = 3
 _ACTIVE = ("new", "surfaced")
 
 

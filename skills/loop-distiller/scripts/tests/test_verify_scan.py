@@ -25,6 +25,15 @@ class VerifyScanTest(unittest.TestCase):
         self.assertFalse(ok)
         self.assertTrue(any("block" in p for p in problems))
 
+    def test_three_blocks_without_vcs_passes(self):
+        ok, problems = vs.verify([_cand(blocks=("discovery", "action", "verify"))])
+        self.assertTrue(ok)            # vcs optional: 3 core blocks clear K=3
+        self.assertEqual(problems, [])
+
+    def test_built_candidate_not_checked(self):
+        ok, _ = vs.verify([_cand(status="built", count=1, blocks=())])
+        self.assertTrue(ok)            # terminal 'built' skipped, like 'dismissed'
+
     def test_terminal_candidates_are_not_checked(self):
         ok, _ = vs.verify([_cand(status="dismissed", count=1, blocks=())])
         self.assertTrue(ok)                          # dismissed/built skipped

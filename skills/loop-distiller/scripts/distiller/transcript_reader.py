@@ -133,7 +133,8 @@ def condense(events: list[dict]) -> dict:
 
 
 def fingerprint(path) -> str:
-    st = pathlib.Path(path).stat()
+    path = pathlib.Path(path)
+    st = path.stat()
     return f"{path}|{st.st_mtime_ns}|{st.st_size}"
 
 
