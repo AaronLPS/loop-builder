@@ -50,9 +50,17 @@ The manifest lives in `.claude-plugin/`; trigger/behavior evals in `evals/evals.
 
 ## Commits
 
+- **Commit when the work reaches a coherent, reviewable checkpoint** — a complete
+  logical change — rather than waiting to be asked. Use judgement: small atomic
+  commits at natural boundaries, each with a clear, professional message that says
+  *why*, not just *what*. Don't leave finished work uncommitted.
+- Land commits on a `feature/<name>` branch per the branching rule above, never
+  directly on `main`.
+- **Pushing and opening PRs** happen when a branch is ready for review; don't push
+  half-finished work, and confirm before pushing if the change is sensitive or
+  outward-facing.
 - End commit messages with the trailer:
   `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`
-- Commit or push only when the maintainer asks.
 
 ## Privacy push gate
 
