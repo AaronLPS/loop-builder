@@ -99,6 +99,32 @@
         "Each surfaced entry is recorded with its source and a named fallback; external code is never inlined",
         "The recommendation carries the 'verify against source' caution"
       ]
+    },
+    {
+      "id": 101,
+      "prompt": "I just spent this whole session triaging P1 issues by hand — turn what I just did into a loop",
+      "expected_output": "Triggers loop-distiller (not loop-builder cold); reads the current session transcript; applies the seven-block rubric; emits a pre-filled loop-builder blueprint with evidence cites and UNKNOWN->ASK for unseen blocks; hands off to loop-builder; never scaffolds files itself.",
+      "files": [],
+      "expectations": [
+        "The loop-distiller skill is invoked, not loop-builder directly and not an ad-hoc answer",
+        "It reads or summarizes the current session transcript as the evidence source",
+        "It emits the loop-builder fill-in template pre-filled from evidence, with cites",
+        "Blocks with no transcript evidence are marked UNKNOWN -> ASK rather than guessed",
+        "It hands off to loop-builder for the interview and scaffolding, and does not write loop files itself",
+        "Any /goal, /loop, /schedule, or transcript-path mechanic is flagged as needing verification against current docs"
+      ]
+    },
+    {
+      "id": 102,
+      "prompt": "Distill my recent work into a loop",
+      "expected_output": "Triggers loop-distiller; if the session lacks enough block evidence (a one-off), it says so and declines rather than forcing a loop; output is loops only, never a standalone skill.",
+      "files": [],
+      "expectations": [
+        "The loop-distiller skill is invoked",
+        "When fewer than four blocks have evidence, it tells the user this is not a reusable workflow yet and stops instead of fabricating a loop",
+        "It never emits a standalone skill (loops only)",
+        "It does not invent evidence or fabricate command flags"
+      ]
     }
   ]
 }
