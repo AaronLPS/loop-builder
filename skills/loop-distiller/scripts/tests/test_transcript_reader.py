@@ -80,5 +80,37 @@ class CondenseTest(unittest.TestCase):
             self.assertEqual(self.c["counts"][k], len(self.c[k]))
 
 
+class ListAndFingerprintTest(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = pathlib.Path(self.tmp.name)
+        os.environ.pop(tr.PROJECTS_ROOT_ENV, None)
+
+    def tearDown(self):
+        os.environ.pop(tr.PROJECTS_ROOT_ENV, None)
+        self.tmp.cleanup()
+
+    def test_fingerprint_is_stable_and_path_sensitive(self):
+        f = self.root / "a.jsonl"; f.write_text("{}\n", encoding="utf-8")
+        fp1 = tr.fingerprint(f)
+        self.assertEqual(fp1, tr.fingerprint(f))           # stable
+        self.assertIn(str(f), fp1)                          # path-sensitive
+        other = self.root / "b.jsonl"; other.write_text("{}\n", encoding="utf-8")
+        self.assertNotEqual(fp1, tr.fingerprint(other))     # different file -> different fp
+
+    def test_list_transcripts_globs_all_projects_sorted(self):
+        (self.root / "proj-one").mkdir(); (self.root / "proj-two").mkdir()
+        a = self.root / "proj-one" / "s1.jsonl"; a.write_text("{}\n", encoding="utf-8")
+        b = self.root / "proj-two" / "s2.jsonl"; b.write_text("{}\n", encoding="utf-8")
+        (self.root / "proj-one" / "notes.txt").write_text("x", encoding="utf-8")  # ignored
+        os.environ[tr.PROJECTS_ROOT_ENV] = str(self.root)
+        got = tr.list_transcripts()
+        self.assertEqual(got, sorted([a, b]))               # only .jsonl, sorted
+
+    def test_list_transcripts_empty_root_returns_empty(self):
+        os.environ[tr.PROJECTS_ROOT_ENV] = str(self.root)
+        self.assertEqual(tr.list_transcripts(), [])
+
+
 if __name__ == "__main__":
     unittest.main()
