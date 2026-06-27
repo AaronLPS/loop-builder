@@ -13,6 +13,7 @@ import pathlib
 
 TRANSCRIPT_FILE_ENV = "LOOP_DISTILLER_TRANSCRIPT_FILE"
 TRANSCRIPT_DIR_ENV = "LOOP_DISTILLER_TRANSCRIPT_DIR"
+PROJECTS_ROOT_ENV = "LOOP_DISTILLER_PROJECTS_ROOT"
 
 
 def encode_project_dir(cwd: str) -> str:
@@ -24,6 +25,9 @@ def encode_project_dir(cwd: str) -> str:
 
 
 def _projects_root() -> pathlib.Path:
+    override = os.environ.get(PROJECTS_ROOT_ENV)
+    if override:
+        return pathlib.Path(override)
     return pathlib.Path.home() / ".claude" / "projects"
 
 
@@ -126,3 +130,16 @@ def condense(events: list[dict]) -> dict:
             buckets["action"].append(ref)  # other shell mutations
     counts = {k: len(v) for k, v in buckets.items()}
     return {**buckets, "counts": counts}
+
+
+def fingerprint(path) -> str:
+    path = pathlib.Path(path)
+    st = path.stat()
+    return f"{path}|{st.st_mtime_ns}|{st.st_size}"
+
+
+def list_transcripts(projects_root=None) -> list:
+    root = pathlib.Path(projects_root) if projects_root else _projects_root()
+    if not root.is_dir():
+        return []
+    return sorted(root.glob("*/*.jsonl"))
