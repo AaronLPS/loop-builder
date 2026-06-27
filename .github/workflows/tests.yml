@@ -31,3 +31,6 @@ jobs:
 
       - name: Feedback module tests
         run: bash skills/feedback-to-issue/scripts/tests/test_feedback.sh
+
+      - name: loop-distiller kernel tests
+        run: bash skills/loop-distiller/scripts/tests/test_loop_distiller.sh
