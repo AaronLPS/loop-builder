@@ -52,7 +52,8 @@ is designed in the spec but not built yet.
 
 4. **Hand off to loop-builder.** Present the draft for correction, then invoke the
    `loop-builder` skill with the corrected answers as its interview starting
-   point. Do not scaffold loop files here.
+   point — the corrected answers are passed by inlining them in the conversation,
+   not via a file or argument contract. Do not scaffold loop files here.
 
 ## What this skill must not do
 
